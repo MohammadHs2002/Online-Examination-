@@ -1,25 +1,31 @@
-import logo from './logo.svg';
 import './App.css';
+import LandingPage from './LandingPage';
+import {BrowserRouter,Routes,Route} from 'react-router-dom'; 
+import Login from './Login';
+import NoPage from './NoPage';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { UserProvider } from './UserContext';
+import AdminMain from './AdminSide/AdminMain';
+import StudentMain from './StudentSide/StudentMain';
+import PrivateRoutesAdmin from './PrivateRoutes';
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return ( 
+        <UserProvider>
+        <ToastContainer/>
+        <BrowserRouter>
+            <Routes>
+            <Route index element={<LandingPage />} />
+            <Route path="login" element={<Login />} />
+            <Route path="admin" element={<PrivateRoutesAdmin><AdminMain /></PrivateRoutesAdmin>} />
+            <Route path="student" element={<StudentMain />} />
+            <Route path="*" element={<NoPage />} />
+            </Routes>
+        </BrowserRouter>
+        </UserProvider>
+    );
 }
 
 export default App;
