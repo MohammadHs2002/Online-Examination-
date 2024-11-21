@@ -1,20 +1,36 @@
 import React, { useContext } from 'react';
 import { UserContext } from '../UserContext';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import SideBar from './SideBar';
+import NavBar from './NavBar';
+import Foter from './Foter.js';
 
 const AdminMain = () => {
-  const { logout } = useContext(UserContext);
-  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
 
   return (
-    <div>
-      <button onClick={handleLogout}>Logout</button>
-    </div>
+    <>
+      <div id="wrapper">
+        {/* Sidebar */}
+        <SideBar/>
+        {/* Sidebar */}
+        <div id="content-wrapper" className="d-flex flex-column">
+          <div id="content">
+            {/* TopBar */}
+            <NavBar/>
+            {/* Topbar */}
+            {/* Container Fluid*/}
+              <Outlet/>
+            {/*-Container Fluid*/}
+          </div>
+          {/* Footer */}
+          <Foter/>
+          {/* Footer */}
+        </div>
+      </div>
+
+    </>
   );
 };
 

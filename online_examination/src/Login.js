@@ -1,56 +1,75 @@
-import React, { useState,useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { useForm } from "react-hook-form";
-import {ToastContainer,toast} from "react-toastify"
 import { UserContext } from './UserContext';
 import { Navigate, redirect } from 'react-router-dom';
 
+
 const LoginForm = () => {
-  const {JwtToken,login,endpoint} = useContext(UserContext);
+  //getting importtant objects that nedded
+  const { JwtToken, login, endpoint, showError } = useContext(UserContext);
   const form = useForm();
   const { register, control, handleSubmit } = form;
 
+
+  //show  toast message function
+
+
+  //function that handlee login and form requierd funcnality
+  //data is geted from form form library use
   const HandleLogin = (data) => {
-    if(!(data.username=="") && !(data.password=="")){
-    axios.post(`${endpoint}/api/user/Login`, data,{
-      headers: {
-        "Authorization": `Bearer ${JwtToken}`
-      }
-    })
-    .then(res => {
-      if(res.status==200){
-          toast.success("Login Succefull",1000)    
-          login(res.data);
-          setTimeout(()=>{
-            if(res.data.role==="Admin"){
-                window.location.href='http://localhost:3000/admin';
-            }else if(res.data.role==='Student'){
-              < Navigate to="/student"/>
-            }
-          },3000);
-      }
-    })
-    .catch(error => {
-      console.log(error);
-      if(error.response.status==403)
-        toast.error("Wrong Password")
-      else if(error.response.status==404)
-        toast.error("User Not Found")
-      else if(error.response.status=423)
-        toast.error("User Blocked Plese Contact Admin");
+
+    //checking if username and password are not null
+    if (!(data.username == "") && !(data.password == "")) {
+
+      //sending api request to backednd for login
+      axios.post(`${endpoint}/api/user/Login`, data, {
+        headers: {
+          "Authorization": `Bearer ${JwtToken}`
+        }
+      })
+        .then(res => {
+          //checking resposnse of backend
+          if (res.status == 200) {
+            showError("Login Succefull", 1000, "success");
+            //storing session in localstorage
+            login(res.data);
+
+            //redirecting user according its role 
+            setTimeout(() => {
+              if (res.data.role === "Admin") {
+                window.location.href = "http://localhost:3000/admin";
+              } else if (res.data.role === 'Student') {
+                < Navigate to="/student" />
+              }
+            }, 3000);
+          }
+        })
+        //checking why user was not able to login 
+        .catch(error => {
+          if (error.code == "ERR_NETWORK") {
+            showError();
+            return;
+          }
+          if (error.response.status == 403)
+            showError("Wrong Password");
+          else if (error.response.status == 404)
+            showError("User Not Found");
+          else if (error.response.status = 423)
+            showError("User Blocked Plese Contact Admin");
+          else
+            showError();
+        });
+    }
+    else {
+      if (data.username == "" && data.password == "")
+        showError("Username & Password Required");
+      else if (data.username == "")
+        showError("Username Required");
       else
-        toast.error("Somting Went Wrong Plese Try Again")
-    });
-  }
-  else{
-    if(data.username=="" && data.password=="")
-      toast.error("Username & Password Required")
-      else if(data.username=="")
-      toast.error("Username Required")
-      else
-      toast.error("Password Required")
-  }
+        showError("Password Required");
+    }
   };
 
   return (
