@@ -11,7 +11,7 @@ const LoginForm = () => {
   const { JwtToken, login, endpoint, showError } = useContext(UserContext);
   const form = useForm();
   const { register, control, handleSubmit } = form;
-
+  
 
   //show  toast message function
 
@@ -85,6 +85,7 @@ const LoginForm = () => {
                   <input
                     type="text"
                     id="username"
+                    placeholder='Enter Username'
                     className="form-control"
                     {...register("username")}
                   />
@@ -95,6 +96,7 @@ const LoginForm = () => {
                   <input
                     type="password"
                     id="password"
+                    placeholder='Enter Password'
                     className="form-control"
                     {...register("password")}
                   />
@@ -102,15 +104,6 @@ const LoginForm = () => {
 
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <div className="form-check">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="rememberMe"
-                      name="remember-me"
-                    />
-                    <label className="form-check-label" htmlFor="rememberMe">
-                      Remember me
-                    </label>
                   </div>
                   <a href="#" className="text-decoration-none">
                     Forgot?

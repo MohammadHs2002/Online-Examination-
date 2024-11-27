@@ -80,7 +80,11 @@ public class UserController {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 	                .body("Role must be 'Admin' or 'Student'.");
 	    }
-	    
+	    	
+	    	if(userServices.getUserByUserName(user.getUsername())!=null) {
+	    		return ResponseEntity.status(HttpStatus.CONFLICT)
+		                .body("Username already exists. Please choose another one.");
+	    	}
 	    // Encoding passsword
 	    user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 	    	

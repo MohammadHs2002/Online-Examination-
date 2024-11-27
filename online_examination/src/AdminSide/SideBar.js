@@ -7,15 +7,14 @@ const SideBar = () => {
             <ul className="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
                 <a className="sidebar-brand d-flex align-items-center justify-content-center">
                     <div className="sidebar-brand-icon">
-                        <img src="./assets/admin/img/logo/logo.png" />
+                        <img src={`${process.env.PUBLIC_URL}/assets/admin/img/logo/logo.png`} />
                     </div>
                 </a>
                 <hr className="sidebar-divider my-0" />
                 <li className="nav-item active">
                     <NavLink className="nav-link" to="http://localhost:3000/admin" > <i className="fas fa-fw fa-tachometer-alt" /><span>Dashboard</span></NavLink>
                     <a className="nav-link" href="index.html">
-                        
-                       </a>
+                    </a>
                 </li>
                 <hr className="sidebar-divider" />
                 <div className="sidebar-heading">
@@ -26,31 +25,25 @@ const SideBar = () => {
                         <i className="far fa-solid fa-user" />
                         <span>Users</span>
                     </NavLink>
-                    {/* <div id="collapseBootstrap" className="collapse" aria-labelledby="headingBootstrap" data-parent="#accordionSidebar">
-                        <div className="bg-white py-2 collapse-inner rounded">
-                            <h6 className="collapse-header">Bootstrap UI</h6>
-                            <a className="collapse-item" href="alerts.html">Alerts</a>
-                            <a className="collapse-item" href="buttons.html">Buttons</a>
-                            <a className="collapse-item" href="dropdowns.html">Dropdowns</a>
-                            <a className="collapse-item" href="modals.html">Modals</a>
-                            <a className="collapse-item" href="popovers.html">Popovers</a>
-                            <a className="collapse-item" href="progress-bar.html">Progress Bars</a>
-                        </div>
-                    </div> */}
-                </li>
-                {/* <li className="nav-item">
+                </li><br/>
+                <li className="nav-item">
                     <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseForm" aria-expanded="true" aria-controls="collapseForm">
-                        <i className="fab fa-fw fa-wpforms" />
-                        <span>Forms</span>
+                        <i className="fas fa-fw fa-table" />
+                        <span>Student</span>
                     </a>
                     <div id="collapseForm" className="collapse" aria-labelledby="headingForm" data-parent="#accordionSidebar">
                         <div className="bg-white py-2 collapse-inner rounded">
-                            <h6 className="collapse-header">Forms</h6>
-                            <a className="collapse-item" href="form_basics.html">Form Basics</a>
-                            <a className="collapse-item" href="form_advanceds.html">Form Advanceds</a>
+                            <h6 className="collapse-header">Student</h6>
+                            <NavLink className="nav-link collapsed" to="student" data-target="#collapseBootstrap" aria-expanded="true" aria-controls="collapseBootstrap">
+                                <span>Student</span>
+                            </NavLink>
+                            <NavLink className="nav-link collapsed" to="group" data-target="#collapseBootstrap" aria-expanded="true" aria-controls="collapseBootstrap">
+                                <span>Groups</span>
+                            </NavLink>
                         </div>
                     </div>
                 </li>
+                {/*
                 <li className="nav-item">
                     <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTable" aria-expanded="true" aria-controls="collapseTable">
                         <i className="fas fa-fw fa-table" />

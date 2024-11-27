@@ -167,7 +167,7 @@ const NavBar = () => {
                     <div className="topbar-divider d-none d-sm-block" />
                     <li className="nav-item dropdown no-arrow">
                         <a className="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img className="img-profile rounded-circle" src="./assets/admin/img/boy.png" style={{ maxWidth: 60 }} alt={false.toString()}/>
+                            <img className="img-profile rounded-circle" src={`${process.env.PUBLIC_URL}/assets/admin/img/boy.png`} style={{ maxWidth: 60 }} alt={false.toString()}/>
                             <span className="ml-2 d-none d-lg-inline text-white small">{user.username}</span>
                         </a>
                         <div className="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">

@@ -118,6 +118,9 @@ const Users = () => {
       })
       .catch(error => {
         console.log(error);
+        if(error.status===401){
+          generateJwt();
+        }
       })
   }
 
@@ -304,7 +307,7 @@ const Users = () => {
   return (
     <>
       <div className="container-fluid" id="container-wrapper">
-        <div className="d-sm-flex align-items-center justify-content-between mb-4">
+        <div className="d-sm-flex align-items-center justify-content-between mb-4 ml-200">
           <div className='row'>
             <h3 className="mb-3 text-center">User Managment</h3>
             <div className='d-flex justify-content-end '>

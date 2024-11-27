@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { UserContext } from './UserContext';
 
 const LandingPage = () => {
+  const { user } = useContext(UserContext);
+
   return (
     <div className="bg-light">
       <header id="header" className="header d-flex align-items-center fixed-top">
@@ -11,13 +14,21 @@ const LandingPage = () => {
           </a>
           <nav id="navmenu" className="navmenu">
             <ul>
-              <li><Link  to="/" className="active">Home</Link></li>
-              <li><Link >About</Link></li>   
+              <li><Link to="/" className="active">Home</Link></li>
+              <li><Link >About</Link></li>
               <li><Link >Contact</Link></li>
             </ul>
             <i className="mobile-nav-toggle d-xl-none bi bi-list" />
           </nav>
-          <Link className="btn-getstarted" to="Login">Login</Link>
+          {
+            !user ? (
+              <Link className="btn-getstarted" to="/Login">Login</Link>
+            ) : user.role === "Admin" ? (
+              <Link className="btn-getstarted" to="/admin">Admin</Link>
+            ) : (
+              <Link className="btn-getstarted" to="/student">Student</Link>
+            )
+          }
         </div>
       </header>
 
@@ -29,7 +40,7 @@ const LandingPage = () => {
               <div className="col-lg-6 mb-4 mb-lg-0">
                 <h1 className="display-4 fw-bold">Welcome to Online Examination Hub</h1>
                 <p className="lead mt-3">
-                  Join a community of learners and get access to quality online exams designed for all levels. 
+                  Join a community of learners and get access to quality online exams designed for all levels.
                   Track your progress, review your scores, and enhance your learning experience.
                 </p>
                 <div className="mt-4">

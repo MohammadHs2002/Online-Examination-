@@ -6,7 +6,7 @@ import GlobalFilter from './GlobalFilter';
 import { Checkbox } from './Checkbox';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const BasicTable = ({ data, columns ,deActiveMultipleUser,activeMultipleUser,deleteMultiUser}) => {
+const BasicTable = ({ data, columns, deActiveMultipleUser, activeMultipleUser, deleteMultiUser,groups=null,filterByGroup=null }) => {
 
     const {
         getTableProps,
@@ -54,12 +54,28 @@ const BasicTable = ({ data, columns ,deActiveMultipleUser,activeMultipleUser,del
             <div className='Contaniner mt-3'>
                 <div className='row'>
                     <div className='col-sm-5'>
-                    <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} className="justify-content-start col-sm" />
+                        <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} className="justify-content-start col-sm" />
                     </div>
+                    {groups!=null && (
+                    <div className='col-sm-3'>
+                        <select
+                            className="form-select"
+                            id="groupid"
+                            onChange={(e)=>filterByGroup(e.target.value)}
+                        >
+                            <option value="0">Select a group</option>
+                            {groups.map((group) => (
+                                <option key={group.id} value={group.id}>
+                                    {group.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    )}
                     <div className='d-flex justify-content-end col-sm'>
-                        <button className='btn btn-outline-danger mr-2' disabled={selectedFlatRows.length===0} onClick={()=>deleteMultiUser(selectedFlatRows)}>Delete</button>
-                        <button className='btn btn-outline-success mr-2' disabled={selectedFlatRows.length===0} onClick={()=>activeMultipleUser(selectedFlatRows)}>activate</button>
-                        <button className='btn btn-outline-secondary mr-2' disabled={selectedFlatRows.length===0} onClick={()=>deActiveMultipleUser(selectedFlatRows)}>Deactivat</button>
+                        <button className='btn btn-outline-danger mr-2' disabled={selectedFlatRows.length === 0} onClick={() => deleteMultiUser(selectedFlatRows)}>Delete</button>
+                        <button className='btn btn-outline-success mr-2' disabled={selectedFlatRows.length === 0} onClick={() => activeMultipleUser(selectedFlatRows)}>activate</button>
+                        <button className='btn btn-outline-secondary mr-2' disabled={selectedFlatRows.length === 0} onClick={() => deActiveMultipleUser(selectedFlatRows)}>Deactivat</button>
                     </div>
                 </div>
             </div>
@@ -158,6 +174,11 @@ const BasicTable = ({ data, columns ,deActiveMultipleUser,activeMultipleUser,del
                     </button>
                 </div>
             </div>
+            {/* for checking selected rows */}
+            {/* <div>
+                <h4>Selected Rows:</h4>
+                <pre>{JSON.stringify(selectedFlatRows.map((d) => d.original), null, 2)}</pre>
+            </div> */}
         </div>
     );
 };

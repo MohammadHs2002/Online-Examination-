@@ -8,6 +8,7 @@ import org.hibernate.annotations.ManyToAny;
 import com.example.validation.Action;
 import com.example.validation.IpOrMacNotNull;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -26,7 +27,6 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Entity
 @Table(name="logger")
 @IpOrMacNotNull
@@ -49,7 +49,6 @@ public class Logger {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id", nullable = false)
-	@JsonBackReference
+	@JsonBackReference("user-logger")
 	private Users user;
-
 }
