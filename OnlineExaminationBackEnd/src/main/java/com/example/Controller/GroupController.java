@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Entity.Group;
+import com.example.Entity.Student;
 import com.example.Service.GroupService;
+import com.example.Service.StudentService;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +29,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class GroupController {
 	@Autowired
 	private GroupService groupService;
+	
+	@Autowired
+	private StudentService studentService;
 	
 	@GetMapping
 	public ResponseEntity<?> getAllGroups() {
@@ -79,10 +85,30 @@ public class GroupController {
 	public ResponseEntity<?> deleteGroup(@PathVariable int id){
 		Group existingGroup=groupService.getGroupById(id);
 		if(existingGroup!=null) {
+			List<Student> students=studentService.getStudentByGroupId(existingGroup);
+			for(Student student:students) {
+				studentService.deleteStudent(student.getId());
+			}
 			groupService.deleteGroup(id);
 			return ResponseEntity.ok("Group with id:"+id+" Deleted Successfully");
 		}else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Group found by id :"+id);
+		}
+	}
+	
+	@PostMapping("/multiple")
+	public ResponseEntity<?> deleteMultipleGroups(@RequestBody List<Group> groups){
+		try {
+			for(Group group:groups) {
+				List<Student> students=studentService.getStudentByGroupId(group);
+				for(Student student:students) {
+					studentService.deleteStudent(student.getId());
+				}
+				groupService.deleteGroup(group.getId());
+			}
+			return ResponseEntity.status(HttpStatus.OK).body("Selected Student Deleted Successfully");
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Somthing went wrong while Deleting Groups");
 		}
 	}
 }

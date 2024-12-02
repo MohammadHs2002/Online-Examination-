@@ -148,9 +148,9 @@ const Student = () => {
     ], []);
 
 
-    //Create , Update , Delete , Active/Deactive User Function
+    //Create , Update , Delete , Active/Deactive Student Function
 
-    //Create User
+    //Create Student
 
 
     const HandleNewStudentSubmit = async (data) => {
@@ -174,7 +174,7 @@ const Student = () => {
     };
 
 
-    //Update User
+    //Update Student
     const handleUpdate = (id) => {
         axios.get(`${endpoint}/api/student/${id}`, {
             headers: {
@@ -182,7 +182,17 @@ const Student = () => {
             }
         }).then(res => {
             const student = res.data;
-            reset({ username: student.user.username, password: '', })
+            reset({
+                username: student.user.username,
+                password: '',
+                name: student.name,
+                unique_id: student.unique_id,
+                program: student.program,
+                semester: student.semester,
+                division: student.division,
+                number: student.number,
+                groupid:student.group.id
+            })
             setUpdateStudentId(id);
             setUpdateStudentModel(true);
         })
@@ -194,9 +204,10 @@ const Student = () => {
             })
     };
 
-
+    // handling update submit
     const HandleUpdateSubmit = (data) => {
-        axios.put(`${endpoint}/api/user/${updateStudentId}`, data, {
+        console.log(data);
+        axios.put(`${endpoint}/api/student/${updateStudentId}`, data, {
             headers: {
                 "Authorization": `Bearer ${JwtToken}`,
             }
@@ -204,14 +215,15 @@ const Student = () => {
             if (res.status === 200) {
                 setUpdateStudentModel(false);
                 LoadData();
-                showError("User Updated Sucessfully", 1000, 'success');
+                showError("Student Updated Sucessfully", 1000, 'success');
                 reset();
             }
         }).catch(error => {
             if (error.status === 409) {
-                showError("Username Alredy Taken");
+                console.log(error);
+                showError(error.response.data);
             } else {
-                showError("Somthing went wrong while Updating User");
+                showError("Somthing went wrong while Updating Student");
             }
             if (error.status === 401) {
                 generateJwt();
@@ -219,7 +231,7 @@ const Student = () => {
         })
     }
 
-    //Delete User
+    //Delete Student
 
     const handleDelete = (Id) => {
         console.log(Id);
@@ -254,7 +266,7 @@ const Student = () => {
             })
     }
 
-    //Active Deactive User
+    //Active Deactive Student
     const toggleActivation = (userId) => {
         axios.get(`${endpoint}/api/user/activate/${userId}`, {
             headers: {
@@ -335,7 +347,10 @@ const Student = () => {
                 }, 3000);
             })
             .catch(error => {
-                if (error.status === 404) setData([]);
+                if (error.status === 404) {
+                    setData([]);
+                    showError("No Student Found");
+                }else showError("Somthing wrong while loading Student")
             })
     }
 
@@ -350,7 +365,7 @@ const Student = () => {
                 setGroupData(res.data);
             })
             .catch(error => {
-                console.log(error);
+                
             })
     }
 
@@ -371,7 +386,9 @@ const Student = () => {
                 }
             })
             .catch(error => {
-                showError("Somthing went Wrong Durring Adding Group");
+                if(error.status===409){
+                    showError("Group name Alredy Exists");
+                }else showError("Somthing went Wrong Durring Adding Group");
             })
     }
 
@@ -454,6 +471,7 @@ const Student = () => {
             number: null
         });
         setAddGroupModel(false);
+        setUpdateStudentId(null);
         setGroup(null);
     }
 
@@ -461,6 +479,7 @@ const Student = () => {
     useEffect(() => {
         LoadData();
         LoadGroup();
+        //its a clean up function when component unmount
         if (tooltipRef.current) {
             const tooltip = new window.bootstrap.Tooltip(tooltipRef.current);
             return () => tooltip.dispose(); // Cleanup on component unmount
@@ -596,8 +615,6 @@ const Student = () => {
                                                     {...register("division", { required: true })}
                                                 />
                                             </div>
-
-                                            {/* Group Dropdown with Icon */}
                                             <div className="col-md-6">
                                                 <label htmlFor="mobile" className="form-label">Mobile</label>
                                                 <input
@@ -610,7 +627,7 @@ const Student = () => {
                                             </div>
                                         </div>
                                         <div className="row g-2 mt-2">
-                                            {/* Group Dropdown with Icon */}
+                                            {/* Group Dropdown  */}
                                             <div className="col-md-6">
                                                 <label htmlFor="groupid" className="form-label">Group</label>
                                                 <div className="input-group">
@@ -668,41 +685,142 @@ const Student = () => {
                                     </button>
                                 </div>
                                 <div className="modal-body">
-                                    <form onSubmit={handleSubmit(HandleUpdateSubmit)} method='post'>
-                                        <div className="form-group mb-1">
-                                            <label htmlFor="username" className="form-label">Username</label>
-                                            <input
-                                                type="text"
-                                                id="username"
-                                                className="form-control"
-                                                placeholder='Enter Username'
-                                                {...register("username", { required: true })}
-                                            />
+                                <form onSubmit={handleSubmit(HandleUpdateSubmit)} method="post">
+                                        <div className="row g-2">
+                                            {/* Username Field */}
+                                            <div className="col-md-6">
+                                                <label htmlFor="username" className="form-label">Username</label>
+                                                <input
+                                                    type="text"
+                                                    id="username"
+                                                    required
+                                                    placeholder='Enter User name'
+                                                    className="form-control"
+                                                    {...register("username", { required: true })}
+                                                />
+                                            </div>
+
+                                            {/* Password Field */}
+                                            <div className="col-md-6">
+                                                <label htmlFor="password" className="form-label">Password</label>
+                                                <input
+                                                    type="password"
+                                                    id="password"
+                                                    placeholder='Leave a blank to keep unchanged'
+                                                    className="form-control"
+                                                    {...register("password")}
+                                                />
+                                            </div>
                                         </div>
 
-                                        <div className="form-group mb-1">
-                                            <label htmlFor="password" className="form-label">Password</label>
-                                            <input
-                                                type="password"
-                                                id="password"
-                                                placeholder='Leave blank to keep unchanged'
-                                                className="form-control"
-                                                {...register("password")}
-                                            />
+                                        <div className="row g-2 mt-2">
+                                            {/* Name Field */}
+                                            <div className="col-md-6">
+                                                <label htmlFor="name" className="form-label">Student Name</label>
+                                                <input
+                                                    type="text"
+                                                    id="name"
+                                                    required
+                                                    placeholder='Enter Full Name'
+                                                    className="form-control"
+                                                    {...register("name", { required: true })}
+                                                />
+                                            </div>
+
+                                            {/* Unique ID Field */}
+                                            <div className="col-md-6">
+                                                <label htmlFor="unique_id" className="form-label">Unique ID</label>
+                                                <input
+                                                    type="text"
+                                                    id="unique_id"
+                                                    required
+                                                    placeholder='Enter Unique Id'
+                                                    className="form-control"
+                                                    {...register("unique_id", { required: true })}
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="form-group mb-1 d-flex">
-                                            <label htmlFor="role" className="form-label">Role:</label>
-                                            <select
-                                                className="form-select w-auto"
-                                                id="role"
-                                                {...register("role")}
-                                            >
-                                                <option value="Admin">Admin</option>
-                                                <option value="Student">Student</option>
-                                            </select>
+
+                                        <div className="row g-2 mt-2">
+                                            {/* Program Field */}
+                                            <div className="col-md-6">
+                                                <label htmlFor="program" className="form-label">Course</label>
+                                                <input
+                                                    type="text"
+                                                    id="program"
+                                                    placeholder='Enter Course name'
+                                                    className="form-control"
+                                                    {...register("program", { required: true })}
+                                                />
+                                            </div>
+
+                                            {/* Semester Field */}
+                                            <div className="col-md-6">
+                                                <label htmlFor="semester" className="form-label">Semester</label>
+                                                <input
+                                                    type="number"
+                                                    id="semester"
+                                                    min="1"
+                                                    max="8"
+                                                    className="form-control"
+                                                    {...register("semester", { required: true })}
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="d-grid mt-2">
-                                            <button type='submit' className="btn btn-primary">
+
+                                        <div className="row g-2 mt-2">
+                                            {/* Division Field */}
+                                            <div className="col-md-6">
+                                                <label htmlFor="division" className="form-label">Division</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder='Enter Divison'
+                                                    id="division"
+                                                    className="form-control"
+                                                    {...register("division", { required: true })}
+                                                />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label htmlFor="mobile" className="form-label">Mobile</label>
+                                                <input
+                                                    type="number"
+                                                    placeholder='Enter Mobile'
+                                                    id="mobile"
+                                                    className="form-control"
+                                                    {...register("number", { required: true })}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="row g-2 mt-2">
+                                            {/* Group Dropdown */}
+                                            <div className="col-md-6">
+                                                <label htmlFor="groupid" className="form-label">Group</label>
+                                                <div className="input-group">
+                                                    <span className="input-group-text">
+                                                        <i className="bi bi-people"></i> {/* Bootstrap group icon */}
+                                                    </span>
+                                                    <select
+                                                        className="form-select"
+                                                        id="groupid"
+                                                        {...register("groupid", { required: true })}
+                                                    >
+                                                        {groupsData.map((group) => (
+                                                            <option key={group.id} value={group.id}>
+                                                                {group.name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className='form-label'></label>
+                                                <div className=''>
+                                                    <button type="button" className='btn btn-outline-success mt-10' onClick={() => setAddGroupModel(true)}>Add New Group</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="d-grid mt-3">
+                                            <button type="submit" className="btn btn-primary">
                                                 Submit
                                             </button>
                                         </div>
@@ -768,7 +886,7 @@ const Student = () => {
                                         </div>
                                     </div>
                                     <div className="row g-2 mt-2">
-                                        {/* Group Dropdown with Icon */}
+                                        {/* Group Dropdown  */}
                                         <div className="col-md-6">
                                             <label htmlFor="groupid" className="form-label">Group</label>
                                             <div className="input-group">
@@ -825,9 +943,9 @@ const Student = () => {
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <form method="post">
+                                <form>
                                     <div className="row g-2">
-                                        {/* Username Field */}
+                                        {/* Group name Field */}
                                         <div className="col-md-6">
                                             <label htmlFor="username" className="form-label">Group Name</label>
                                             <input
@@ -842,7 +960,7 @@ const Student = () => {
                                         </div>
                                     </div>
                                     <div className="d-grid mt-2">
-                                        <button type='submit' onClick={() => HandleNewGroupSubmit()} className="btn btn-primary">
+                                        <button type='button' onClick={() => HandleNewGroupSubmit()} className="btn btn-primary">
                                             Submit
                                         </button>
                                     </div>
@@ -852,7 +970,7 @@ const Student = () => {
                     </div>
                 </div>
             )}
-
+{/* multiple student upload error show hear */}
             {multipleStudentError !== "" && (
                 <div className="modal-overlay">
                     <div className="modal show d-block" tabIndex="-1" role="dialog">

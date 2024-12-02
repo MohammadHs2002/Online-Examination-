@@ -1,12 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTable, useSortBy, useGlobalFilter, usePagination, useRowSelect } from 'react-table';
-import mData from './MOCK_DATA.json';
-import { format } from 'date-fns';
 import GlobalFilter from './GlobalFilter';
 import { Checkbox } from './Checkbox';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const BasicTable = ({ data, columns, deActiveMultipleUser, activeMultipleUser, deleteMultiUser,groups=null,filterByGroup=null }) => {
+const BasicTable = ({ data, columns, deActiveMultipleUser=null, activeMultipleUser=null, deleteMultiUser,groups=null,filterByGroup=null }) => {
 
     const {
         getTableProps,
@@ -49,6 +47,10 @@ const BasicTable = ({ data, columns, deActiveMultipleUser, activeMultipleUser, d
 
     const { globalFilter, pageIndex, pageSize } = state;
 
+    useEffect(() => {
+        setPageSize(5);
+      }, []);
+
     return (
         <div className="container">
             <div className='Contaniner mt-3'>
@@ -74,8 +76,14 @@ const BasicTable = ({ data, columns, deActiveMultipleUser, activeMultipleUser, d
                     )}
                     <div className='d-flex justify-content-end col-sm'>
                         <button className='btn btn-outline-danger mr-2' disabled={selectedFlatRows.length === 0} onClick={() => deleteMultiUser(selectedFlatRows)}>Delete</button>
-                        <button className='btn btn-outline-success mr-2' disabled={selectedFlatRows.length === 0} onClick={() => activeMultipleUser(selectedFlatRows)}>activate</button>
+                        {activeMultipleUser!=null && (
+                            <button className='btn btn-outline-success mr-2' disabled={selectedFlatRows.length === 0} onClick={() => activeMultipleUser(selectedFlatRows)}>activate</button>
+                        )}
+                        {
+                            deActiveMultipleUser!=null && (
                         <button className='btn btn-outline-secondary mr-2' disabled={selectedFlatRows.length === 0} onClick={() => deActiveMultipleUser(selectedFlatRows)}>Deactivat</button>
+                            )
+                        }
                     </div>
                 </div>
             </div>
@@ -137,7 +145,7 @@ const BasicTable = ({ data, columns, deActiveMultipleUser, activeMultipleUser, d
                     onChange={e => setPageSize(Number(e.target.value))}
                     className="form-select w-auto"
                 >
-                    {[10, 25, 50].map(pageSize => (
+                    {[5,10, 25, 50].map(pageSize => (
                         <option key={pageSize} value={pageSize}>
                             Show {pageSize}
                         </option>

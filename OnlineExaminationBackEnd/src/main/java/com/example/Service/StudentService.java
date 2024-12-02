@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.Entity.Group;
 import com.example.Entity.Student;
 import com.example.Entity.Users;
 import com.example.Repository.StudentRepo;
@@ -46,5 +47,9 @@ public class StudentService {
 	
 	public Student findByNumber(Long number) {
 		return studentRepo.findByNumber(number);
+	}
+	
+	public List<Student> getStudentByGroupId(Group group){
+		return studentRepo.findByGroup(group);
 	}
 }

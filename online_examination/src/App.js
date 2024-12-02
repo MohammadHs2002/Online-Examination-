@@ -16,6 +16,7 @@ import AlredyLogin from './AlredyLogin';
 import Student from './AdminSide/Student';
 import Loading from './Loading';
 import axios from 'axios';
+import Groups from './AdminSide/Groups';
 
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
                 <Route index element={<Dashboard/>}/>
                 <Route path="users" element={<Users/>}/>
                 <Route path="student" element={<Student/>}/>
+                <Route path="group" element={<Groups/>}/>
             </Route>
             <Route path="student" element={<StudentMain />} />
             <Route path="*" element={<NoPage />} />

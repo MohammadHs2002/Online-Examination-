@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,9 @@ public class StudentController {
 	
 	@Autowired
 	private GroupService groupService;
+	
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	
 	@GetMapping
@@ -130,49 +134,42 @@ public class StudentController {
 
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> updateGroup(@PathVariable int id, @RequestBody Student student) {
+	public ResponseEntity<?> updateStudent(@PathVariable int id, @RequestBody StudentDto student) {
 		Student existingStudent=studentService.getStudentById(id);
-		if(existingStudent!=null) {
-			if(student.getName()!=null) existingStudent.setName(student.getName());
-			if(student.getDivision()!=null) existingStudent.setDivision(student.getDivision());
-			if(student.getProgram()!=null) existingStudent.setProgram(student.getProgram());
-			if(student.getSemester()!=0) existingStudent.setSemester(student.getSemester());
-			if(student.getUnique_id()!=null) {
-				if(studentService.findByUniqueId(student.getUnique_id())!=null && !existingStudent.getUnique_id().equals(student.getUnique_id())) {
-					return ResponseEntity.status(HttpStatus.CONFLICT).body("Unique id Not Available");
-				}
-				existingStudent.setUnique_id(student.getUnique_id());
-			}
-			
-			if(student.getUser()!=null) {
-				Users user=userService.getUserById(student.getUser().getUserId());
-				if(user!=null) {
-					if(!existingStudent.getUser().equals(user)){
-					if(!user.getRole().equals("Student")) {
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User Must Be Student");
-					}
-					if(studentService.findByUser(user.getUserId())!=null) {
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Student With this User Alredy Exists");
-					}
-					}
-					existingStudent.setUser(user);
-				}else {
-					return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
-				}
-			}
-			
-			if(student.getGroup()!=null) {
-				Group group=groupService.getGroupById(student.getGroup().getId());
-				if(group!=null) {
-					existingStudent.setGroup(group);
-				}else {
-					return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group Not Found");
-				}
-			}
-			
-			return ResponseEntity.ok(studentService.saveStudent(existingStudent));
-		}else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Student found by id :"+id);
+		Users user=existingStudent.getUser();
+		user.setUserId(existingStudent.getUser().getUserId());
+		if(studentService.findByUniqueId(student.getUnique_id())!=null && !existingStudent.getUnique_id().equals(student.getUnique_id())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Unique id Not Available");
+		}
+		existingStudent.setUnique_id(student.getUnique_id());
+		System.out.println(userService.getUserByUserName(student.getUsername()));
+		if(userService.getUserByUserName(student.getUsername())!=null && !existingStudent.getUser().getUsername().equals(student.getUsername())) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).body("UserName not Available");
+		}
+		user.setUsername(student.getUsername());
+		
+		if(student.getPassword()!="") {
+				System.out.println("Password Changes");
+				user.setPassword(bCryptPasswordEncoder.encode(student.getPassword()));
+		}
+		
+		existingStudent.setName(student.getName());
+		existingStudent.setProgram(student.getProgram());
+		existingStudent.setSemester(student.getSemester());
+		existingStudent.setDivision(student.getDivision());
+		existingStudent.setNumber(student.getNumber());
+		existingStudent.setGroup(groupService.getGroupById(student.getGroupid()));
+		
+		try {
+			userService.saveUser(user);
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Somthing went wrong while updating user");
+		}
+		
+		try {
+		return ResponseEntity.ok(studentService.saveStudent(existingStudent));
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Somthing went wrong while updating Student");
 		}
 	}
 	
@@ -190,7 +187,6 @@ public class StudentController {
 	
 	@PostMapping("/multiple")
 	public ResponseEntity<?> deleteMultipleStudent(@RequestBody List<Student> students){
-		System.out.println(students);
 		try {
 			for(Student student:students) {
 				studentService.deleteStudent(student.getId());
