@@ -17,6 +17,8 @@ import Student from './AdminSide/Student';
 import Loading from './Loading';
 import axios from 'axios';
 import Groups from './AdminSide/Groups';
+import Questions from './AdminSide/Questions';
+import QuestionCategory from './AdminSide/QuestionCategory';
 
 
 function App() {
@@ -48,10 +50,10 @@ function App() {
 
     return ( 
         <React.StrictMode>
-        <UserProvider>
         <ToastContainer/>
         <Loading show={loading}/>
         <BrowserRouter>
+        <UserProvider>
             <Routes>
             <Route index element={<LandingPage />} />
             <Route path="login" element={<AlredyLogin><Login/></AlredyLogin>} />
@@ -60,12 +62,14 @@ function App() {
                 <Route path="users" element={<Users/>}/>
                 <Route path="student" element={<Student/>}/>
                 <Route path="group" element={<Groups/>}/>
+                <Route path="mcq-question" element={<Questions/>}/>
+                <Route path="mcq-question-category" element={<QuestionCategory/>}/>
             </Route>
             <Route path="student" element={<StudentMain />} />
             <Route path="*" element={<NoPage />} />
             </Routes>
+            </UserProvider>
         </BrowserRouter>
-        </UserProvider>
         </React.StrictMode>
     );
 }

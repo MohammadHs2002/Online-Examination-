@@ -43,6 +43,24 @@ const SideBar = () => {
                         </div>
                     </div>
                 </li>
+                <br/>
+                <li className="nav-item">
+                    <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#openQuestion" aria-expanded="true" aria-controls="collapseForm">
+                        <i className="fas fa-fw fa-table" />
+                        <span>MCQ</span>
+                    </a>
+                    <div id="openQuestion" className="collapse" aria-labelledby="headingForm" data-parent="#accordionSidebar">
+                        <div className="bg-white py-2 collapse-inner rounded">
+                            <h6 className="collapse-header">Question</h6>
+                            <NavLink className="nav-link collapsed" to="mcq-question" data-target="#collapseBootstrap" aria-expanded="true" aria-controls="collapseBootstrap">
+                                <span>Question</span>
+                            </NavLink>
+                            <NavLink className="nav-link collapsed" to="mcq-question-category" data-target="#collapseBootstrap" aria-expanded="true" aria-controls="collapseBootstrap">
+                                <span>Category</span>
+                            </NavLink>
+                        </div>  
+                    </div>
+                </li>
                 {/*
                 <li className="nav-item">
                     <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTable" aria-expanded="true" aria-controls="collapseTable">

@@ -4,7 +4,7 @@ import GlobalFilter from './GlobalFilter';
 import { Checkbox } from './Checkbox';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const BasicTable = ({ data, columns, deActiveMultipleUser=null, activeMultipleUser=null, deleteMultiUser,groups=null,filterByGroup=null }) => {
+const BasicTable = ({ data, columns, deActiveMultipleUser=null, activeMultipleUser=null, deleteMultiUser,groups=null,filterByGroup=null,category=null,filterByCategory=null,filterByDificulty=null }) => {
 
     const {
         getTableProps,
@@ -69,6 +69,38 @@ const BasicTable = ({ data, columns, deActiveMultipleUser=null, activeMultipleUs
                             {groups.map((group) => (
                                 <option key={group.id} value={group.id}>
                                     {group.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    )}
+                    {category!=null && (
+                    <div className='col-sm-3'>
+                        <select
+                            className="form-select"
+                            id="categoryId"
+                            onChange={(e)=>filterByCategory(e.target.value)}
+                        >
+                            <option value="0">Select a Category</option>
+                            {category.map((categry) => (
+                                <option key={categry.id} value={categry.id}>
+                                    {categry.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    )}
+                    {filterByDificulty!=null && (
+                    <div className='col-sm-3'>
+                        <select
+                            className="form-select"
+                            id="categoryId"
+                            onChange={(e)=>filterByDificulty(e.target.value)}
+                        >
+                            <option value="0">Select a Difficulty</option>
+                            {["HARD","MEDIUM","EASY"].map((dificulty) => (
+                                <option key={dificulty} value={dificulty}>
+                                    {dificulty}
                                 </option>
                             ))}
                         </select>

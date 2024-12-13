@@ -349,6 +349,7 @@ const Student = () => {
             .catch(error => {
                 if (error.status === 404) {
                     setData([]);
+                    setFilterData([]);
                     showError("No Student Found");
                 }else showError("Somthing wrong while loading Student")
             })

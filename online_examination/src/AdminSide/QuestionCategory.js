@@ -9,23 +9,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash} from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 
-const Groups = () => {
-    //essential data
+const QuestionCategory = () => {
+    //Essential data
     const { JwtToken, endpoint, showError, generateJwt } = useContext(UserContext);
     const [data, setData] = useState([]);
-    const [group, setGroup] = useState("");
+    const [category, setCategory] = useState("");
 
-    //models for update,delete
+    //models for create,update,delete
     const [createModel, setCreateModel] = useState(false);
     const [updateModel, setUpdateModel] = useState(false);
     const [deleteModel, setDeleteModel] = useState(false);
-    const [updateGroupId, setUpdateGroupId] = useState(null);
-    const [deleteGroupId, setDeleteGroupId] = useState(null);
-    const [multipleGroups,setMultipleGroups] =useState(null);
+    const [updateCategoryId, setUpdateCategoryId] = useState(null);
+    const [deleteCategoryId, setDeleteCategoryId] = useState(null);
+    const [multipleCategory,setMultipleCategory] =useState(null);
 
 
-    // Goup tables column
-    const groupColumn = useMemo(() => [
+    // Category tables column
+    const catgoryColumn = useMemo(() => [
         {
             Header: 'ID',
             accessor: 'id',
@@ -40,19 +40,18 @@ const Groups = () => {
             Header: 'Creation Time',
             accessor: 'createdAt',
             Footer: 'Creation Time',
-            Cell: ({ value }) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss'), // Formatting date correctly
+            Cell: ({ value }) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss'), 
         },
         {
             Header: 'Update Time',
-            accessor: 'updatedAt', // Fix here
+            accessor: 'updatedAt', 
             Footer: 'Creation Time',
-            Cell: ({ value }) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss'), // Formatting date correctly
+            Cell: ({ value }) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss'), 
         },
         {
             Header: 'Actions',
             Cell: ({ row }) => (
                 <div className="d-flex justify-content-around">
-                    {/* Update Icon */}
                     <span
                         className="text-warning"
                         style={{ cursor: 'pointer', fontSize: '18px' }}
@@ -60,8 +59,6 @@ const Groups = () => {
                     >
                         <FontAwesomeIcon icon={faEdit} />
                     </span>
-
-                    {/* Delete Icon */}
                     <span
                         className="text-danger"
                         style={{ cursor: 'pointer', fontSize: '18px', marginLeft: '10px' }}
@@ -76,9 +73,9 @@ const Groups = () => {
 
 
 
-    // Loading Groups Data
+    // Loading Category Data
     const LoadGroup = async () => {
-        await axios.get(`${endpoint}/api/group`, {
+        await axios.get(`${endpoint}/api/MCQCategory`, {
             headers: {
                 "Authorization": `Bearer ${JwtToken}`
             }
@@ -94,9 +91,9 @@ const Groups = () => {
             })
     }
 
-    //create new group
-    const HandleNewGroupSubmit = async () => {
-        await axios.post(`${endpoint}/api/group`, { name: group }, {
+    //create new Category
+    const HandleNewCategorySubmit = async () => {
+        await axios.post(`${endpoint}/api/MCQCategory`, { name: category }, {
             headers: {
                 "Authorization": `Bearer ${JwtToken}`
             }
@@ -119,16 +116,16 @@ const Groups = () => {
 
 
 
-    //Update Student
+    //Update Category
     const handleUpdate = (id) => {
-        axios.get(`${endpoint}/api/group/${id}`, {
+        axios.get(`${endpoint}/api/MCQCategory/${id}`, {
             headers: {
                 "Authorization": `Bearer ${JwtToken}`
             }
         }).then(res => {
             const group = res.data;
-            setGroup(group.name);
-            setUpdateGroupId(id);
+            setCategory(group.name);
+            setUpdateCategoryId(id);
             setUpdateModel(true);
         })
             .catch(error => {
@@ -142,7 +139,7 @@ const Groups = () => {
     // handling update submit
     const HandleUpdateSubmit = (data) => {
         console.log(data);
-        axios.put(`${endpoint}/api/group/${updateGroupId}`, { name: group }, {
+        axios.put(`${endpoint}/api/MCQCategory/${updateCategoryId}`, { name: category }, {
             headers: {
                 "Authorization": `Bearer ${JwtToken}`,
             }
@@ -166,22 +163,22 @@ const Groups = () => {
     }
 
 
-    //Delete Group
+    //Delete Category model
 
     const handleDelete = (Id) => {
-        setDeleteGroupId(Id);
+        setDeleteCategoryId(Id);
         setDeleteModel(true);
     };
 
-
-    const deleteMultiGroup = (selectedFlatRows) => {
-        setMultipleGroups(selectedFlatRows.map(row => row.original));
+//Delete Multple Category Model
+    const deleteMultiCategory = (selectedFlatRows) => {
+        setMultipleCategory(selectedFlatRows.map(row => row.original));
         setDeleteModel(true);
     }
-
-    const handleDeleteGroup=()=>{
-        if(deleteGroupId!=null){
-            axios.delete(`${endpoint}/api/group/${deleteGroupId}`, {
+//Delete Category
+    const handleDeleteCategory=()=>{
+        if(deleteCategoryId!=null){
+            axios.delete(`${endpoint}/api/MCQCategory/${deleteCategoryId}`, {
                 headers: {
                     "Authorization": `Bearer ${JwtToken}`,
                 }
@@ -195,8 +192,8 @@ const Groups = () => {
                 showError("Somthing went wrong Plese Try Again Letter");
             })
         }
-        else if(multipleGroups!=null){
-            axios.post(`${endpoint}/api/group/multiple`, multipleGroups, {
+        else if(multipleCategory!=null){
+            axios.post(`${endpoint}/api/MCQCategory/deleteMultiple`, multipleCategory, {
                 headers: {
                     "Authorization": `Bearer ${JwtToken}`,
                 }
@@ -213,16 +210,16 @@ const Groups = () => {
                 })
         }
     }
-
+//closing all model 
 
     const closeModels = () => {
         setDeleteModel(false);
         setUpdateModel(false);
         setCreateModel(false);
-        setUpdateGroupId(null);
-        setDeleteGroupId(null);
-        setMultipleGroups(null);
-        setGroup(null);
+        setUpdateCategoryId(null);
+        setDeleteCategoryId(null);
+        setMultipleCategory(null);
+        setCategory(null);
     }
 
     //use Effect
@@ -237,12 +234,12 @@ const Groups = () => {
             <div className="container-fluid" id="container-wrapper">
                 <div className="d-sm-flex align-items-center justify-content-between mb-4 ml-200">
                     <div className='row'>
-                        <h3 className="mb-3 text-center">Groups Managment</h3>
+                        <h3 className="mb-3 text-center">MCQ Category Managment</h3>
                         <div className='d-flex justify-content-end '>
-                            <button type='button' className='btn btn-outline-primary' onClick={() => setCreateModel(true)}>Add Group</button>
+                            <button type='button' className='btn btn-outline-primary' onClick={() => setCreateModel(true)}>Add Category</button>
                         </div>
                         <div>
-                            <BasicTable data={data} columns={groupColumn} deleteMultiUser={deleteMultiGroup} />
+                            <BasicTable data={data} columns={catgoryColumn} deleteMultiUser={deleteMultiCategory} />
                         </div>
                     </div>
                 </div>
@@ -253,7 +250,7 @@ const Groups = () => {
                         <div className="modal-dialog modal-dialog-centered" role="document">
                             <div className="modal-content">
                                 <div className="modal-header">
-                                    <h5 className="modal-title">Add New Group</h5>
+                                    <h5 className="modal-title">Add New Category</h5>
                                     <button
                                         type="button"
                                         className="close"
@@ -267,20 +264,20 @@ const Groups = () => {
                                     <div className="row g-2">
                                         {/* Group name Field */}
                                         <div className="col-md-6">
-                                            <label htmlFor="username" className="form-label">Group Name</label>
+                                            <label htmlFor="username" className="form-label">Category Name</label>
                                             <input
                                                 type="text"
                                                 id="username"
                                                 required
                                                 placeholder='Enter User name'
                                                 className="form-control"
-                                                value={group}
-                                                onChange={e => { setGroup(e.target.value) }}
+                                                value={category}
+                                                onChange={e => { setCategory(e.target.value) }}
                                             />
                                         </div>
                                     </div>
                                     <div className="d-grid mt-2">
-                                        <button type='button' onClick={() => HandleNewGroupSubmit()} className="btn btn-primary">
+                                        <button type='button' onClick={() => HandleNewCategorySubmit()} className="btn btn-primary">
                                             Submit
                                         </button>
                                     </div>
@@ -297,7 +294,7 @@ const Groups = () => {
                         <div className="modal-dialog modal-dialog-centered" role="document">
                             <div className="modal-content">
                                 <div className="modal-header">
-                                    <h5 className="modal-title">Add New Group</h5>
+                                    <h5 className="modal-title">Update New Category</h5>
                                     <button
                                         type="button"
                                         className="close"
@@ -311,15 +308,15 @@ const Groups = () => {
                                     <div className="row g-2">
                                         {/* Group name Field */}
                                         <div className="col-md-6">
-                                            <label htmlFor="username" className="form-label">Group Name</label>
+                                            <label htmlFor="username" className="form-label">Category Name</label>
                                             <input
                                                 type="text"
                                                 id="username"
                                                 required
                                                 placeholder='Enter User name'
                                                 className="form-control"
-                                                value={group}
-                                                onChange={e => { setGroup(e.target.value) }}
+                                                value={category}
+                                                onChange={e => { setCategory(e.target.value) }}
                                             />
                                         </div>
                                     </div>
@@ -341,7 +338,7 @@ const Groups = () => {
                         <div className="modal-dialog modal-dialog-centered" role="document">
                             <div className="modal-content">
                                 <div className="modal-header">
-                                    <h5 className="modal-title">Delete Group</h5>
+                                    <h5 className="modal-title">Delete Category</h5>
                                     <button
                                         type="button"
                                         className="close"
@@ -353,7 +350,7 @@ const Groups = () => {
                                 </div>
                                 <div className="modal-body">
                                     <p className="text-danger fw-bold">
-                                        Warning: Deleting this group will also delete all Student associated with it.
+                                        Warning: Deleting this Category will also delete all MCQ Question associated with it.
                                         This action is irreversible!
                                     </p>
                                     <p>Are you sure you want to proceed?</p>
@@ -369,7 +366,7 @@ const Groups = () => {
                                     <button
                                         type="button"
                                         className="btn btn-danger"
-                                        onClick={() => handleDeleteGroup()}
+                                        onClick={() => handleDeleteCategory()}
                                     >
                                         Delete Group
                                     </button>
@@ -384,4 +381,4 @@ const Groups = () => {
     )
 }
 
-export default Groups
+export default QuestionCategory
