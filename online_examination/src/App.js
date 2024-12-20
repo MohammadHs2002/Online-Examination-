@@ -19,6 +19,7 @@ import axios from 'axios';
 import Groups from './AdminSide/Groups';
 import Questions from './AdminSide/Questions';
 import QuestionCategory from './AdminSide/QuestionCategory';
+import ProgramingQuestion from './AdminSide/ProgramingQuestion';
 
 
 function App() {
@@ -64,6 +65,7 @@ function App() {
                 <Route path="group" element={<Groups/>}/>
                 <Route path="mcq-question" element={<Questions/>}/>
                 <Route path="mcq-question-category" element={<QuestionCategory/>}/>
+                <Route path="programing-question" element={<ProgramingQuestion/>}/>
             </Route>
             <Route path="student" element={<StudentMain />} />
             <Route path="*" element={<NoPage />} />

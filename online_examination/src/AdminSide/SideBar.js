@@ -18,14 +18,14 @@ const SideBar = () => {
                 </li>
                 <hr className="sidebar-divider" />
                 <div className="sidebar-heading">
-                    Features
+                    User Managment
                 </div>
                 <li className="nav-item">
                     <NavLink className="nav-link collapsed" to="users" data-target="#collapseBootstrap" aria-expanded="true" aria-controls="collapseBootstrap">
                         <i className="far fa-solid fa-user" />
-                        <span>Users</span>
+                        <span>Admin</span>
                     </NavLink>
-                </li><br/>
+                </li>
                 <li className="nav-item">
                     <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseForm" aria-expanded="true" aria-controls="collapseForm">
                         <i className="fas fa-fw fa-table" />
@@ -44,9 +44,12 @@ const SideBar = () => {
                     </div>
                 </li>
                 <br/>
+                <div className="sidebar-heading">
+                    Question Managment
+                </div>
                 <li className="nav-item">
                     <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#openQuestion" aria-expanded="true" aria-controls="collapseForm">
-                        <i className="fas fa-fw fa-table" />
+                        <i className="fas fa-fw fa-palette" />
                         <span>MCQ</span>
                     </a>
                     <div id="openQuestion" className="collapse" aria-labelledby="headingForm" data-parent="#accordionSidebar">
@@ -60,6 +63,12 @@ const SideBar = () => {
                             </NavLink>
                         </div>  
                     </div>
+                </li>
+                <li className="nav-item">
+                    <NavLink className="nav-link collapsed" to="programing-question" data-target="#collapseBootstrap" aria-expanded="true" aria-controls="collapseBootstrap">
+                        <i className="fas fa-fw fa-question" />
+                        <span>Programing</span>
+                    </NavLink>
                 </li>
                 {/*
                 <li className="nav-item">

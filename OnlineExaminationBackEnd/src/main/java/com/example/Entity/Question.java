@@ -6,7 +6,6 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -46,7 +45,6 @@ public class Question {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="Id",nullable = false)
-	@JsonManagedReference("mcq-option")
 	private MCQCategory catagory;
 	
 	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
