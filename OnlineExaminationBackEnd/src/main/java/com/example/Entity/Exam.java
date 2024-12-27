@@ -65,9 +65,11 @@ public class Exam {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ExamStatus status;
-
+    private ExamStatus status=ExamStatus.Scheduled;
     
+    @Column(nullable =false)
+    private boolean isResultDeclared=false;
+
     @ManyToOne
     private MCQCategory mcqCategorie;
 

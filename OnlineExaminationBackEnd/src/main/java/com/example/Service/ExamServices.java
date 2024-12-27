@@ -1,26 +1,26 @@
 package com.example.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Entity.Exam;
+import com.example.Entity.Exam.ExamStatus;
 import com.example.Entity.Exam.ExamType;
 import com.example.Entity.Exam_Allotment;
 import com.example.Entity.Exam_Answer;
 import com.example.Entity.Exam_Questions;
 import com.example.Entity.Exam_Result;
 import com.example.Entity.Exam_Security_log;
-import com.example.Entity.MCQCategory;
 import com.example.Entity.ProgramingQuestion;
 import com.example.Entity.Question;
-import com.example.Entity.Question.Difficulty;
 import com.example.Entity.Student;
+import com.example.Entity.Users;
 import com.example.Repository.AllotmentRepo;
 import com.example.Repository.ExamAnswerRepo;
 import com.example.Repository.ExamQuestionRepo;
@@ -31,6 +31,8 @@ import com.example.Repository.GroupRepo;
 import com.example.Repository.ProgramingQuestionRepo;
 import com.example.Repository.QuestionRepo;
 import com.example.Repository.StudentRepo;
+
+import Dto.ExamFetchDto;
 
 @Service
 public class ExamServices {
@@ -68,6 +70,21 @@ public class ExamServices {
 	
 	public List<Exam> getAllExams(){
 		return  examRepo.findAll();
+	}
+	
+	public List<ExamFetchDto> getAllAllotments(){
+		List<ExamFetchDto> dto=new ArrayList<>();
+		for(Exam_Allotment e:allotmentRepo.findAll()) {
+			ExamFetchDto d=new ExamFetchDto();
+			d.setExam(e.getExam());
+			d.setAllotment(e);
+			dto.add(d);
+		}
+		return dto;
+	}
+	
+	public void deleteAllotments(Exam_Allotment allotment) {
+		 allotmentRepo.deleteById(allotment.getAllotmentId());
 	}
 	
 	public Exam getExamById(Integer id) {
@@ -146,6 +163,10 @@ public class ExamServices {
 		examRepo.deleteById(id);
 	}
 	
+	public void deleteAllotmentById(Integer id) {
+		allotmentRepo.deleteById(id);
+	}
+	
 	public Integer checkQuestionAvailibility(Exam e) {
 		if(e.getExamType().equals(ExamType.MCQ)) {
 		List<Question> questions= questionRepo.findByCatagory(e.getMcqCategorie());
@@ -155,5 +176,42 @@ public class ExamServices {
 			List<ProgramingQuestion> filteredQuestion=programingRepo.findByDifficulty(e.getExamDifficulty());
 			return filteredQuestion.size();
 		}
+	}
+	
+	public List<Exam> findUpComingExams(){
+		List<Exam> upcomingExam=new ArrayList<>();
+		for(Exam e:examRepo.findAll()) {
+			LocalDateTime examDate = e.getExamStartDateTime();
+			LocalDateTime currentDate = LocalDateTime.now();
+			if(e.getStatus().equals(ExamStatus.Scheduled) && examDate.isAfter(currentDate))upcomingExam.add(e);
+		}
+		return upcomingExam;
+	}
+	
+	
+	public List<ExamFetchDto> getAllExamsByUser(Users user){
+		Student student=studentRepo.findByUser(user);
+		List<ExamFetchDto> exams=new ArrayList<>();
+		List<Exam_Allotment> allotments=allotmentRepo.findByStudentId(student);
+		for(Exam_Allotment a:allotments) {
+			ExamFetchDto dto=new ExamFetchDto();
+			dto.setExam(a.getExam());
+			dto.setAllotment(a);
+			exams.add(dto);
+		}
+		return exams;
+	}
+	
+	
+	public Exam_Allotment getAllotmentById(int id) {
+		return allotmentRepo.findById(id).orElse(null);
+	}
+	
+	public Exam_Security_log updateSecurityLog(Exam_Security_log log) {
+		return examSecurityRepo.save(log);
+	}
+	
+	public Exam_Allotment updateAllotment(Exam_Allotment allotment) {
+		return allotmentRepo.save(allotment);
 	}
 }

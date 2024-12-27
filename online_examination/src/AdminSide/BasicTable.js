@@ -4,7 +4,7 @@ import GlobalFilter from './GlobalFilter';
 import { Checkbox } from './Checkbox';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const BasicTable = ({ data, columns, deActiveMultipleUser=null, activeMultipleUser=null, deleteMultiUser,groups=null,filterByGroup=null,category=null,filterByCategory=null,filterByDificulty=null }) => {
+const BasicTable = ({ data, columns, deActiveMultipleUser=null, activeMultipleUser=null, deleteMultiUser,groups=null,filterByGroup=null,category=null,filterByCategory=null,filterByDificulty=null,filterByExamType=null,filterByExamStatus=null}) => {
 
     const {
         getTableProps,
@@ -55,11 +55,25 @@ const BasicTable = ({ data, columns, deActiveMultipleUser=null, activeMultipleUs
         <div className="container">
             <div className='Contaniner mt-3'>
                 <div className='row'>
-                    <div className='col-sm-5'>
+                    <div className='col-sm-3'>
                         <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} className="justify-content-start col-sm" />
                     </div>
+                    {filterByExamType!=null && (
+                    <div className='col-sm-2'>
+                        <select
+                            className="form-select"
+                            id="groupid"
+                            onChange={(e)=>filterByExamType(e.target.value)}
+                        >
+                            <option value="All">Select Exam Type</option>
+                            <option value="MCQ">MCQ</option>
+                            <option value="PROGRAMMING">Programming</option>
+                            
+                        </select>
+                    </div>
+                    )}
                     {groups!=null && (
-                    <div className='col-sm-3'>
+                    <div className='col-sm-2'>
                         <select
                             className="form-select"
                             id="groupid"
@@ -75,7 +89,7 @@ const BasicTable = ({ data, columns, deActiveMultipleUser=null, activeMultipleUs
                     </div>
                     )}
                     {category!=null && (
-                    <div className='col-sm-3'>
+                    <div className='col-sm-2'>
                         <select
                             className="form-select"
                             id="categoryId"
@@ -91,7 +105,7 @@ const BasicTable = ({ data, columns, deActiveMultipleUser=null, activeMultipleUs
                     </div>
                     )}
                     {filterByDificulty!=null && (
-                    <div className='col-sm-3'>
+                    <div className='col-sm-2'>
                         <select
                             className="form-select"
                             id="categoryId"
@@ -99,6 +113,23 @@ const BasicTable = ({ data, columns, deActiveMultipleUser=null, activeMultipleUs
                         >
                             <option value="0">Select a Difficulty</option>
                             {["HARD","MEDIUM","EASY"].map((dificulty) => (
+                                <option key={dificulty} value={dificulty}>
+                                    {dificulty}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    )}
+
+                    {filterByExamStatus!=null && (
+                    <div className='col-sm-2'>
+                        <select
+                            className="form-select"
+                            id="categoryId"
+                            onChange={(e)=>filterByExamStatus(e.target.value)}
+                        >
+                            <option value="0">Select Status</option>
+                            {["Scheduled","Running","Closed"].map((dificulty) => (
                                 <option key={dificulty} value={dificulty}>
                                     {dificulty}
                                 </option>

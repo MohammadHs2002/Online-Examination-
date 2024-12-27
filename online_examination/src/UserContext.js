@@ -34,7 +34,7 @@ export const UserProvider = ({ children }) => {
     generateJwt();
   }, []);
 
-  const login = (userData) => {
+  const login = (userData) => { 
     const now = new Date().getTime(); // Current timestamp
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
@@ -62,6 +62,7 @@ export const UserProvider = ({ children }) => {
     })
       .then(res => {
         setJwt(res.data.jwtToken);
+        localStorage.setItem('JwtToken', res.data.jwtToken);
       })
       .catch(error => {
         console.log(error);
