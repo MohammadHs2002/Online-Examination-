@@ -49,3 +49,28 @@ export const PrivateRoutesStudent=({children}) =>{
     else
         navigate('/login');
 };
+
+
+
+
+export const PrivateRoutesExam=({children}) =>{
+  const navigate = useNavigate();
+  const {Examlogout,examUser} = useContext(UserContext);
+
+  useEffect(() => {
+      const loginTimestamp = localStorage.getItem('ExamloginTimestamp');
+      const SESSION_TIMEOUT = 1*60*60*1000; // 1 day in milliseconds
+      const now = Date.now();
+  
+      if (loginTimestamp && now - parseInt(loginTimestamp, 10) >= SESSION_TIMEOUT) {
+      alert("Exam Session Expires Please Login Again!");
+      Examlogout(); 
+      }
+    }, [Examlogout]);
+
+  
+  if(localStorage.getItem('examData'))
+  return children;
+  else
+      navigate('/student');
+};

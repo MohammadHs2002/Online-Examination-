@@ -79,6 +79,18 @@ public class ExamController {
 		else return ResponseEntity.status(HttpStatus.OK).body(allotments);
 	}
 	
+	
+	@GetMapping("/allotments/{id}") 
+	public ResponseEntity<?> getAllotmentsById(@PathVariable int id){
+		ExamFetchDto dtoAllotment=new ExamFetchDto();
+		Exam_Allotment allotment=examServices.getAllotmentById(id);
+		dtoAllotment.setAllotment(allotment);
+		dtoAllotment.setExam(allotment.getExam());
+		
+		if(allotment==null)return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Allotment Found");
+		else return ResponseEntity.status(HttpStatus.OK).body(dtoAllotment);
+	}
+	
 	@GetMapping("/{id}") 
 	public ResponseEntity<?> getExamsById(@PathVariable Integer id){
 		Exam exam=examServices.getExamById(id);
@@ -258,6 +270,22 @@ public class ExamController {
 	}
 	
 	
+	@PostMapping("/submitMcqAnswer/{answerId}")
+	public ResponseEntity<?> submitAnswerMcq(@RequestBody Map<String,Integer> answerData, @PathVariable int answerId) {
+	    // Assuming the saveAnswer method returns the saved answer or null if there was an issue.
+		int optionId=answerData.get("optionId");
+	    Exam_Answer answer = examServices.saveAnswer(optionId, answerId);
+	    
+	    if (answer != null) {
+	        return ResponseEntity.status(HttpStatus.OK).body(answer);  // Return saved answer with OK status
+	    } else {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                             .body("Something went wrong while saving the answer.");
+	    }
+	}
+
+	
+	
 @PostMapping("/examLogin/{allotmentId}")
 public ResponseEntity<?> examLogin(@RequestBody Users user, @PathVariable int allotmentId, HttpServletRequest request) {
     Users getUser = userServices.loginUser(user.getUsername());
@@ -300,6 +328,7 @@ private ResponseEntity<?> handleLoginLogic(Exam_Allotment allotment, HttpServlet
 
     if (allotment.getIsAppeared()) {
         // User has already appeared for the exam
+    	allotment.setIsAppeared(true);
         if (!log.getFirstLoginIp().equals(request.getRemoteAddr())) {
             return createErrorResponse("Please Login From The Same Device", HttpStatus.CONFLICT);
         }
@@ -318,5 +347,35 @@ private ResponseEntity<?> createErrorResponse(String message, HttpStatus status)
     return ResponseEntity.status(status).body(message);
 }
 
+
+	@PostMapping("/updateStudentTimer/{allotmentId}")
+	public ResponseEntity<?> UpdateStudentUsedTime(@RequestBody Map<String,Integer> usedTime,@PathVariable int allotmentId){
+			
+		if(examServices.updateUsedTime(usedTime.get("time"),allotmentId)) {
+			return ResponseEntity.status(HttpStatus.OK).body("Time Updated "+usedTime.get("time"));
+			}else {
+				return ResponseEntity.status(HttpStatus.CONFLICT).body("Somthing went wrong while Updating Time");
+			}
+	}
+
 	
+	@PostMapping("/securityLog/{allotmentId}")
+	public ResponseEntity<?> securityLog(@PathVariable int allotmentId,@RequestBody Map<String,String> actionType){
+			try {
+				Exam_Security_log log= examServices.updateSecurityLog(actionType.get("action"),allotmentId);
+				return ResponseEntity.status(HttpStatus.OK).body(log);
+			}catch(Exception e) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).body("Somthing went wrong while storing security log");
+			}
+	}
+	
+	
+	@GetMapping("/submitExam/{allotmentId}")
+	public ResponseEntity<?>  submitExam(@PathVariable int allotmentId){
+			if(examServices.submitSingleExam(allotmentId)) {
+				return ResponseEntity.status(HttpStatus.OK).body("Exam Submited Succefully");
+			}else {
+				return ResponseEntity.status(HttpStatus.CONFLICT).body("Somthing went wrong while Submiting exam");
+			}
+	}
 }

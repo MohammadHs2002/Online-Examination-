@@ -34,22 +34,24 @@ const StudentDashboard = () => {
 
 
   const LoadData = () => {
-    axios.post(`${endpoint}/api/exam/get_allotments`, user, {
+    axios.post(`${endpoint}/api/exam/get_allotments`,user, {
       headers: {
         "Authorization": `Bearer ${localStorage.getItem("JwtToken")}`
       }
     }).then(res => {
+      console.log(res);
       const allotments = res.data;
       setExamData(allotments);
       let filteredData = allotments.filter(exam => exam.exam.status === "Scheduled");
       setScheduledExams(filteredData);
-      filteredData = allotments.filter(exam => exam.exam.status === "Running");
+      filteredData = allotments.filter(exam => exam.exam.status === "Running" && !exam.allotment.isSubmited);
       setRunningExams(filteredData);
-      filteredData = allotments.filter(exam => exam.exam.status === "Closed");
+      filteredData = allotments.filter(exam => exam.exam.status === "Closed" || exam.allotment.isSubmited);
       setClosedExams(filteredData);
     }).catch(error => {
       showError("No Alloted Exam Found for You!")
       if (error.status === 401) generateJwt();
+      console.log(error );
     })
   }
 
@@ -296,17 +298,14 @@ const StudentDashboard = () => {
                         <div className="col-md-6">
                           <p><strong>Exam Name:</strong> {viewCompletedExam[0].exam.examName}</p>
                           <p><strong>Duration (Minutes):</strong> {viewCompletedExam[0].exam.examDuration}</p>
-                          <p>
-                            <strong>Exam Start Date &amp; Time:</strong>{" "}
-                            {format(new Date(viewCompletedExam[0].exam.examStartDateTime), 'dd/MM/yyyy HH:mm:ss')}
-                          </p>
-                          <p><strong>Total Marks:</strong> {viewCompletedExam[0].exam.totalMarks}</p>
+                          <p><strong>Result:</strong> {viewCompletedExam[0].allotment.results.marks}/{viewCompletedExam[0].exam.totalMarks}</p>
+                          <p><strong>Rigth Question:</strong> {viewCompletedExam[0].allotment.results.rightQuestions}</p>
+                          <p><strong>Wrong Question:</strong> {viewCompletedExam[0].allotment.results.wrongQuestions}</p>
                         </div>
-                        {/* Right column */}
                         <div className="col-md-6">
                           <p><strong>Exam Type:</strong> {viewCompletedExam[0].exam.examType}</p>
                           <p><strong>Difficulty:</strong> {viewCompletedExam[0].exam.examDifficulty}</p>
-                          <p><strong>Status:</strong> {viewCompletedExam[0].exam.status}</p>
+                          <p><strong>Result Status:</strong> {viewCompletedExam[0].allotment.results.resultStatus}</p>
                           <p><strong>Number of Questions:</strong> {viewCompletedExam[0].exam.numberOfQuestions}</p>
                           <p><strong>Passing Marks:</strong> {viewCompletedExam[0].exam.passingMarks}</p>
                         </div>

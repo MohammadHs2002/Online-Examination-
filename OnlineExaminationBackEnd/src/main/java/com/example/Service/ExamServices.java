@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,9 @@ import com.example.Entity.Exam_Allotment;
 import com.example.Entity.Exam_Answer;
 import com.example.Entity.Exam_Questions;
 import com.example.Entity.Exam_Result;
+import com.example.Entity.Exam_Result.ResultStatus;
 import com.example.Entity.Exam_Security_log;
+import com.example.Entity.MCQOption;
 import com.example.Entity.ProgramingQuestion;
 import com.example.Entity.Question;
 import com.example.Entity.Student;
@@ -28,6 +31,7 @@ import com.example.Repository.ExamRepo;
 import com.example.Repository.ExamResultRepo;
 import com.example.Repository.ExamSecurityRepo;
 import com.example.Repository.GroupRepo;
+import com.example.Repository.MCQOptionRepo;
 import com.example.Repository.ProgramingQuestionRepo;
 import com.example.Repository.QuestionRepo;
 import com.example.Repository.StudentRepo;
@@ -213,5 +217,77 @@ public class ExamServices {
 	
 	public Exam_Allotment updateAllotment(Exam_Allotment allotment) {
 		return allotmentRepo.save(allotment);
+	}
+	
+	
+	public Exam_Answer saveAnswer(int optionId,int answerId) {
+		Exam_Answer answer=examAnswerRepo.findById(answerId).get();
+		answer.setSelectedOptionId(optionId);
+		answer.setIsAnswered(true);
+		return examAnswerRepo.save(answer);
+	}
+	
+	public boolean updateUsedTime(int usedTime,int allotmentId) {
+		try {
+		Exam_Allotment allotment=allotmentRepo.findById(allotmentId).get();
+		allotment.setUsedTime(usedTime);
+		allotmentRepo.save(allotment);
+		return true;
+		}catch(Exception e) {
+			return false;
+		} 
+	}
+	
+	
+	public Exam_Security_log updateSecurityLog(String action,int allotmentId) {
+			Exam_Security_log log= examSecurityRepo.findByAllotment(allotmentRepo.findById(allotmentId).get());
+			
+			if(action.equals("tab-change")) {
+				if(log.getTabSwitchCount()>=3) {
+					log.setIsSuspicious(true);
+					log.setLoginAble(false);
+				}
+				log.setTabSwitchCount(log.getTabSwitchCount()+1);
+			}
+			return examSecurityRepo.save(log);
+	}
+	
+	public boolean submitSingleExam(int allotmentId) {
+		try {
+		Exam_Allotment allotment=allotmentRepo.findById(allotmentId).get();
+		Exam_Result result=calculateResult(allotment);
+		examResultRepo.save(result);
+		allotment.setIsSubmited(true);
+		allotmentRepo.save(allotment);
+		return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public Exam_Result calculateResult(Exam_Allotment allotment) {
+		List<Exam_Answer> answers=allotment.getAnswers();
+		Exam_Result result=allotment.getResults();
+		int rightAnswer=0;
+		int wrongAnswer=0;
+		for(Exam_Answer ans:answers) {
+			if(ans.getIsAnswered()) {
+				List<MCQOption> quetionOptions=ans.getQuestion().getMcqQuestion().getOptions();
+				MCQOption rightOption=quetionOptions.stream().filter(option->option.isCorrect()).collect(Collectors.toList()).get(0);
+				if(ans.getSelectedOptionId().equals(rightOption.getOption_id()))rightAnswer++;
+				else wrongAnswer++;
+			}
+		}
+		result.setRightQuestions(rightAnswer);
+		result.setMarks(rightAnswer);
+		result.setWrongQuestions(wrongAnswer);
+		if(allotment.getSecurityLog().getIsSuspicious()) {
+			result.setResultStatus(ResultStatus.Disqualified);
+		}else if(rightAnswer<allotment.getExam().getPassingMarks()) {
+			result.setResultStatus(ResultStatus.Fail);
+		}else{
+			result.setResultStatus(ResultStatus.Pass);
+		}
+		return result;
 	}
 }

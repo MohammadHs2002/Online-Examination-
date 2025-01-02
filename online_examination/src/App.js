@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { UserProvider } from './UserContext';
 import AdminMain from './AdminSide/AdminMain';
 import StudentMain from './StudentSide/StudentMain';
-import PrivateRoutesAdmin, { PrivateRoutesStudent } from './PrivateRoutes';
+import PrivateRoutesAdmin, { PrivateRoutesExam, PrivateRoutesStudent } from './PrivateRoutes';
 import Users from './AdminSide/Users';
 import Dashboard from './AdminSide/Dashboard';
 import React, { useEffect, useState } from 'react';
@@ -24,6 +24,8 @@ import Exams from './AdminSide/Exams';
 import Allotments from './AdminSide/Allotments';
 import StudentDashboard from './StudentSide/StudentDashboard';
 import ExamLogin from './StudentSide/ExamLogin';
+import StartExamInstruction from './StudentSide/startExamInstruction';
+import McqExam from './StudentSide/McqExam';
 
 
 function App() {
@@ -33,7 +35,9 @@ function App() {
         //request interceptor
         axios.interceptors.request.use(
             (config)=>{
+                if(!config.url.startsWith('http://localhost:8082/api/exam/')){
                 setLoading(true);
+                }
                 return config;
             },
             (error)=>{
@@ -74,8 +78,10 @@ function App() {
                 <Route path="exams" element={<Exams/>}/>
                 <Route path="allotments" element={<Allotments/>}/>
             </Route>
-            <Route path="student" element={<StudentMain />} >
-                <Route index element={<PrivateRoutesStudent><StudentDashboard/></PrivateRoutesStudent>}/>
+            <Route path="student" element={<PrivateRoutesStudent><StudentMain /></PrivateRoutesStudent>} >
+                <Route index element={<StudentDashboard/>}/>
+                <Route path='exam-instruction' element={<PrivateRoutesExam><StartExamInstruction/></PrivateRoutesExam>}/>
+                <Route path='mcq-exam' element={<PrivateRoutesExam><McqExam/></PrivateRoutesExam>}/>
             </Route>
             <Route path="*" element={<NoPage />} />
             </Routes>

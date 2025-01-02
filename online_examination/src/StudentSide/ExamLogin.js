@@ -3,15 +3,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { useForm } from "react-hook-form";
 import { UserContext } from '../UserContext';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 const ExamLogin = () => {
   //getting importtant objects that nedded
-  const { JwtToken, login, endpoint, showError } = useContext(UserContext);
+  const { JwtToken, login, endpoint, showError,Examlogin } = useContext(UserContext);
   const form = useForm();
   const { register, control, handleSubmit } = form;
   const [examData,setExamData]=useState([]);
+  const navigate=useNavigate();
 
   //show  toast message function
 
@@ -34,18 +35,16 @@ const ExamLogin = () => {
           //checking resposnse of backend
           if (res.status == 200) {
             showError("Login Succefull", 1000, "success");
-            console.log(res.data)
             //storing session in localstorage
-            // login(res.data);
-
-            // //redirecting user according its role 
-            // setTimeout(() => {
-            //   if (res.data.role === "Admin") {
-            //     window.location.href = "http://localhost:3000/admin";
-            //   } else if (res.data.role === 'Student') {
-            //     < Navigate to="/student" />
-            //   }
-            // }, 3000);
+            Examlogin(res.data);
+            //redirecting user to start exam 
+            setTimeout(() => {
+              if (res.data.role === "Student") {
+                window.location.href = "http://localhost:3000/student/exam-instruction";
+              } else {
+                showError("Somthing went Wrong !")
+              }
+            }, 1000);
           }
         })
         //checking why user was not able to login 
@@ -69,7 +68,7 @@ const ExamLogin = () => {
 
   useEffect(() => {
     setExamData(localStorage.getItem("exam"));
-  }, [])
+  }, []);
   
 
   return (

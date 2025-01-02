@@ -7,16 +7,17 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [examUser, setExamUser] = useState(null);
   const [JwtToken, setJwt] = useState(null);
   const endpoint = 'http://localhost:8082';
   const SESSION_TIMEOUT = 24*60*60*1000; // 1 day in milliseconds
+  const EXAM_SESSION_TIMEOUT=1*60*60*1000;
   const navigate = useNavigate();
 
   useEffect(() => {
     // Load user data and validate session
     const storedUser = localStorage.getItem('user');
     const loginTimestamp = localStorage.getItem('loginTimestamp');
-
     if (storedUser && loginTimestamp) {
       const now = new Date().getTime();
 
@@ -39,6 +40,20 @@ export const UserProvider = ({ children }) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('loginTimestamp', now.toString());
+  };
+
+  const Examlogin=(userData)=>{
+    const now = new Date().getTime(); // Current timestamp
+    setExamUser(userData);
+    localStorage.setItem('examData',JSON.stringify(userData));
+    localStorage.setItem('ExamloginTimestamp', now.toString());
+  }
+
+  const Examlogout = () => {
+    setExamUser(null);
+    localStorage.removeItem('examData');
+    localStorage.removeItem('ExamloginTimestamp');
+    toast.success('Logged out successfully.');
   };
 
   const logout = () => {
@@ -70,7 +85,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, endpoint, JwtToken, showError, generateJwt }}>
+    <UserContext.Provider value={{ user, login, logout, endpoint, JwtToken, showError, generateJwt,Examlogin,Examlogout,examUser }}>
       {children}
     </UserContext.Provider>
   );
