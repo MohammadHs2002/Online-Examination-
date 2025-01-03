@@ -27,6 +27,8 @@ import ExamLogin from './StudentSide/ExamLogin';
 import StartExamInstruction from './StudentSide/startExamInstruction';
 import McqExam from './StudentSide/McqExam';
 import ProgramingExam from './StudentSide/ProgramingExam';
+import PythonRunner from './StudentSide/runcode';
+import ErrorBoundary from './ErrorBoundry';
 
 
 function App() {
@@ -56,10 +58,14 @@ function App() {
                 return Promise.reject(error);
             }
         );
+
+        
     },[]);
 
+      
+
     return ( 
-        <React.StrictMode>
+        <ErrorBoundary>
         <ToastContainer/>
         <Loading show={loading}/>
         <BrowserRouter>
@@ -86,10 +92,11 @@ function App() {
                 <Route path='programing-exam' element={<PrivateRoutesExam><ProgramingExam/></PrivateRoutesExam>}/>
             </Route>
             <Route path="*" element={<NoPage />} />
+            <Route path="run" element={<PythonRunner />} />
             </Routes>
             </UserProvider>
         </BrowserRouter>
-        </React.StrictMode>
+        </ErrorBoundary>
     );
 }
 

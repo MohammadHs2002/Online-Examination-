@@ -32,7 +32,7 @@ const Exams = () => {
             passingMarks: '',
             status: ''
         }
-    }); 
+    });
 
     //exam Tabel Columns
     const examColumn = useMemo(() => [
@@ -74,14 +74,14 @@ const Exams = () => {
         },
         {
             Header: 'MCQ Category',
-            accessor: 'mcqCategorie.name', 
+            accessor: 'mcqCategorie.name',
             Footer: 'Role',
         },
         {
             Header: 'Result Declared',
-            accessor: 'resultDeclared', 
+            accessor: 'resultDeclared',
             Footer: 'Result Declared',
-            Cell:({value})=>value?"Yes":"No"
+            Cell: ({ value }) => value ? "Yes" : "No"
         },
         {
             Header: 'View More',
@@ -136,7 +136,7 @@ const Exams = () => {
     ], []);
 
     //Exam form
-    const { register, control, reset, handleSubmit,setValue,getValues } = createExamForm;
+    const { register, control, reset, handleSubmit, setValue, getValues } = createExamForm;
     //for model open and Exam updateid
     const [createNewExamModel, setCreateNewExamModel] = useState(false);
     const [updateExamModel, setUpdateExamModel] = useState(false);
@@ -152,9 +152,9 @@ const Exams = () => {
     const [categoryData, setCategoryData] = useState([]);
     const [studentGroup, setStudentGroup] = useState([]);
     const [currentDateTime, setCurrentDateTime] = useState("");
-    const [updateExamStatus,setUpdateExamStatus]=useState("");
-    const [updateExamResult,setUpdateExamResult]=useState("");
-    const [filteredExamTypeData,setFilterExamTypeData] =useState([]);
+    const [updateExamStatus, setUpdateExamStatus] = useState("");
+    const [updateExamResult, setUpdateExamResult] = useState("");
+    const [filteredExamTypeData, setFilterExamTypeData] = useState([]);
 
     //Create , update , delete Functions
     //new Exam Creation
@@ -200,39 +200,39 @@ const Exams = () => {
     };
 
     //Exam Status chnage function
-    const ExamStatusHandling=(event)=>{
+    const ExamStatusHandling = (event) => {
         setUpdateExamStatus(event.target.value);
-        axios.put(`${endpoint}/api/exam/status/${updateExamId}`,{status:event.target.value},{
-            headers:{
-                "Authorization":`Bearer ${JwtToken}`
+        axios.put(`${endpoint}/api/exam/status/${updateExamId}`, { status: event.target.value }, {
+            headers: {
+                "Authorization": `Bearer ${JwtToken}`
             }
-        }).then(res=>{
-            if(res.status===200){
+        }).then(res => {
+            if (res.status === 200) {
                 closeModels()
                 LoadData()
-                showError("Exam Status Changed Sucessfulyy",1000,'success');
+                showError("Exam Status Changed Sucessfulyy", 1000, 'success');
                 setUpdateExamId(null);
             }
-        }).catch(error=>{
+        }).catch(error => {
             showError("Somthing went wrong while changing exam status");
         })
     }
 
     //Exam Result Status Handling
-    const ExamResultHandling=(event)=>{
+    const ExamResultHandling = (event) => {
         setUpdateExamResult(event.target.value);
-        axios.put(`${endpoint}/api/exam/result/${updateExamId}`,{result:event.target.value},{
-            headers:{
-                "Authorization":`Bearer ${JwtToken}`
+        axios.put(`${endpoint}/api/exam/result/${updateExamId}`, { result: event.target.value }, {
+            headers: {
+                "Authorization": `Bearer ${JwtToken}`
             }
-        }).then(res=>{
-            if(res.status===200){
+        }).then(res => {
+            if (res.status === 200) {
                 closeModels()
                 LoadData()
-                showError("Exam Result Status Changed Sucessfulyy",1000,'success');
+                showError("Exam Result Status Changed Sucessfulyy", 1000, 'success');
                 setUpdateExamId(null);
             }
-        }).catch(error=>{
+        }).catch(error => {
             showError("Somthing went wrong while changing exam status");
         })
     }
@@ -350,127 +350,127 @@ const Exams = () => {
             return () => tooltip.dispose();
         }
 
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-      const day = String(now.getDate()).padStart(2, "0");
-      const hours = String(now.getHours()).padStart(2, "0");
-      const minutes = String(now.getMinutes()).padStart(2, "0");
-  
-      // Set the current datetime in the required format
-      setCurrentDateTime(`${year}-${month}-${day}T${hours}:${minutes}`);
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+        const day = String(now.getDate()).padStart(2, "0");
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+
+        // Set the current datetime in the required format
+        setCurrentDateTime(`${year}-${month}-${day}T${hours}:${minutes}`);
     }, []);
 
     //Extra funcction
-//question downloading function
-const downloadQuestionList = (questions) => {
-  let csvData=null;
-  if(viewExamData.examType==="MCQ"){
-  csvData = questions.map((q) => ({
-    QuestionID:q.mcqQuestion.quesionId,
-    Text: q.mcqQuestion.text,
-    Difficulty: q.mcqQuestion.difficulty,
-    Category: q.mcqQuestion.catagory.name,
-    Options: q.mcqQuestion.options.map((o) => `${o.text} (${o.correct ? "Correct" : "Wrong"})`).join("; "),
-    CreatedAt: q.mcqQuestion.createdAt,
-    UpdatedAt: q.mcqQuestion.updatedAt,
-  }));
-}else{
-    csvData = questions.map((q) => ({
-        QuestionID: q.programQuestion.id,
-        Title: q.programQuestion.title,
-        Description: q.programQuestion.description,
-        SampleOutput: q.programQuestion.sampleInput,
-        SampleInput: q.programQuestion.sampleOutput,
-        hints: q.programQuestion.hints,
-        ReferenceAnswer: q.programQuestion.referenceAnswer,
-        Difficulty: q.programQuestion.difficulty,
-      }));
-}
-  // Convert JSON to CSV
-  const csv = Papa.unparse(csvData);
+    //question downloading function
+    const downloadQuestionList = (questions) => {
+        let csvData = null;
+        if (viewExamData.examType === "MCQ") {
+            csvData = questions.map((q) => ({
+                QuestionID: q.mcqQuestion.quesionId,
+                Text: q.mcqQuestion.text,
+                Difficulty: q.mcqQuestion.difficulty,
+                Category: q.mcqQuestion.catagory.name,
+                Options: q.mcqQuestion.options.map((o) => `${o.text} (${o.correct ? "Correct" : "Wrong"})`).join("; "),
+                CreatedAt: q.mcqQuestion.createdAt,
+                UpdatedAt: q.mcqQuestion.updatedAt,
+            }));
+        } else {
+            csvData = questions.map((q) => ({
+                QuestionID: q.programQuestion.id,
+                Title: q.programQuestion.title,
+                Description: q.programQuestion.description,
+                SampleOutput: q.programQuestion.sampleInput,
+                SampleInput: q.programQuestion.sampleOutput,
+                hints: q.programQuestion.hints,
+                ReferenceAnswer: q.programQuestion.referenceAnswer,
+                Difficulty: q.programQuestion.difficulty,
+            }));
+        }
+        // Convert JSON to CSV
+        const csv = Papa.unparse(csvData);
 
-  // Download the file
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  saveAs(blob, "questions.csv");
-};
+        // Download the file
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        saveAs(blob, "questions.csv");
+    };
 
-//student list downloading function
-const downloadStudentList = (allotments) => {
-  // Prepare data for CSV
-  const csvData = allotments.map((a) => ({
-    AllotmentID: a.allotmentId,
-    StudentName: a.studentId.name,
-    UniqueID: a.studentId.unique_id,
-    Program: a.studentId.program,
-    Semester: a.studentId.semester,
-    Division: a.studentId.division,
-    ContactNumber: a.studentId.number,
-    Username: a.studentId.user.username,
-    ActiveStatus: a.studentId.user.active,
-    GroupName: a.studentId.group.name,
-    CreatedAt: a.studentId.createdAt,
-    UpdatedAt: a.studentId.updatedAt,
-  }));
+    //student list downloading function
+    const downloadStudentList = (allotments) => {
+        // Prepare data for CSV
+        const csvData = allotments.map((a) => ({
+            AllotmentID: a.allotmentId,
+            StudentName: a.studentId.name,
+            UniqueID: a.studentId.unique_id,
+            Program: a.studentId.program,
+            Semester: a.studentId.semester,
+            Division: a.studentId.division,
+            ContactNumber: a.studentId.number,
+            Username: a.studentId.user.username,
+            ActiveStatus: a.studentId.user.active,
+            GroupName: a.studentId.group.name,
+            CreatedAt: a.studentId.createdAt,
+            UpdatedAt: a.studentId.updatedAt,
+        }));
 
-  // Convert JSON to CSV
-  const csv = Papa.unparse(csvData);
+        // Convert JSON to CSV
+        const csv = Papa.unparse(csvData);
 
-  // Download the file
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  saveAs(blob, "students.csv");
-};
+        // Download the file
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        saveAs(blob, "students.csv");
+    };
 
 
-//no of quetion to same no of marks for mcq
-const questionToMarks=()=>{
-    if(getValues('examType')==="MCQ") setValue("totalMarks",getValues("numberOfQuestions"))
-}
+    //no of quetion to same no of marks for mcq
+    const questionToMarks = () => {
+        if (getValues('examType') === "MCQ") setValue("totalMarks", getValues("numberOfQuestions"))
+    }
 
-const getCurrentDateTime = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-    const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
+    const getCurrentDateTime = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+        const day = String(now.getDate()).padStart(2, "0");
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
 
     //filter by catagory
     const filterByCategory = (categoryId) => {
-    if (categoryId === "0") {
-        setFilterData(data);
-        setFilterCategoryId(categoryId);
-    } else {
-        setFilterCategoryId(categoryId);
-        const filteredStudentList = data.filter(question => question.catagory.id.toString() === categoryId);
-        setFilterData(filteredStudentList);
-    }
+        if (categoryId === "0") {
+            setFilterData(data);
+            setFilterCategoryId(categoryId);
+        } else {
+            setFilterCategoryId(categoryId);
+            const filteredStudentList = data.filter(question => question.catagory.id.toString() === categoryId);
+            setFilterData(filteredStudentList);
+        }
     }
     //filter by exam type(mcq,programing)
-    const filterByExamType = (type)=>{
-        let filterExamList=null;
-        if(type==="All"){
-            filterExamList=data;
+    const filterByExamType = (type) => {
+        let filterExamList = null;
+        if (type === "All") {
+            filterExamList = data;
             setFilterData(filterExamList);
             setFilterExamTypeData(filterExamList);
             return;
         }
-        filterExamList=data.filter(exam=>exam.examType===type);
+        filterExamList = data.filter(exam => exam.examType === type);
         setFilterData(filterExamList);
-        setFilterExamTypeData(filterExamList); 
+        setFilterExamTypeData(filterExamList);
     }
 
     ///filter by difficulty
     const filterByDificulty = (dificulty) => {
-    if (dificulty === "0") {
-        if(filterCategoryId===0) 
-        setFilterData(filteredExamTypeData);
-    } else {
-        const filteredExamList = filteredExamTypeData.filter(exam => exam.examDifficulty.toString() === dificulty);
-        setFilterData(filteredExamList);
-    }
+        if (dificulty === "0") {
+            if (filterCategoryId === 0)
+                setFilterData(filteredExamTypeData);
+        } else {
+            const filteredExamList = filteredExamTypeData.filter(exam => exam.examDifficulty.toString() === dificulty);
+            setFilterData(filteredExamList);
+        }
     }
 
     ///filter by ExamStatus(scheduled,running,closed)
@@ -481,13 +481,13 @@ const getCurrentDateTime = () => {
             const filteredExamList = data.filter(exam => exam.status.toString() === status);
             setFilterData(filteredExamList);
         }
-        }
+    }
     //filter by student group 
-    const filterByGroup =(grouid)=>{
-        if(grouid==="0"){
+    const filterByGroup = (grouid) => {
+        if (grouid === "0") {
             setFilterData(data);
-        }else{
-            const filtereStudentGroupData=data.filter(exam=>exam.studentGroup.id.toString()===grouid);
+        } else {
+            const filtereStudentGroupData = data.filter(exam => exam.studentGroup.id.toString() === grouid);
             setFilterData(filtereStudentGroupData);
         }
     }
@@ -523,7 +523,7 @@ const getCurrentDateTime = () => {
                             <button type='button' className='btn btn-outline-primary' onClick={() => setCreateNewExamModel(true)}>Create Exam</button>
                         </div>
                         <div>
-                            <BasicTable data={filterData} columns={examColumn}  deleteMultiUser={deleteMultipleExam}  filterByExamType={filterByExamType} filterByDificulty={filterByDificulty} groups={studentGroup} filterByGroup={filterByGroup} filterByExamStatus={filterByExamStatus}/>
+                            <BasicTable data={filterData} columns={examColumn} deleteMultiUser={deleteMultipleExam} filterByExamType={filterByExamType} filterByDificulty={filterByDificulty} groups={studentGroup} filterByGroup={filterByGroup} filterByExamStatus={filterByExamStatus} />
                         </div>
                     </div>
                 </div>
@@ -567,9 +567,9 @@ const getCurrentDateTime = () => {
                                                     id="examStartDateTime"
                                                     required
                                                     placeholder='Enter Exam Start Date Time'
-                                                    min={currentDateTime}  
+                                                    min={currentDateTime}
                                                     className="form-control"
-                                                    {...register("examStartDateTime", { required: true})}
+                                                    {...register("examStartDateTime", { required: true })}
                                                 />
                                             </div>
                                         </div>
@@ -598,7 +598,7 @@ const getCurrentDateTime = () => {
                                                     <select
                                                         className="form-select"
                                                         id="examType"
-                                                        {...register("examType", { required: true})}
+                                                        {...register("examType", { required: true })}
                                                     >
                                                         <option value="">Select Exam Type</option>
                                                         <option key="MCQ" value="MCQ">MCQ</option>
@@ -684,7 +684,7 @@ const getCurrentDateTime = () => {
                                                     required
                                                     placeholder='Enter Number Of Question'
                                                     className="form-control"
-                                                    {...register("numberOfQuestions", { required: true ,onChange:()=>{questionToMarks()}})}
+                                                    {...register("numberOfQuestions", { required: true, onChange: () => { questionToMarks() } })}
                                                 />
                                             </div>
                                         </div>
@@ -709,11 +709,11 @@ const getCurrentDateTime = () => {
                                                     required
                                                     placeholder='Enter Number Of Question'
                                                     className="form-control"
-                                                    {...register("passingMarks", { required: true ,})}
+                                                    {...register("passingMarks", { required: true, })}
                                                 />
                                             </div>
                                         </div>
-                                        
+
                                         <div className="d-grid mt-3">
                                             <button type="submit" className="btn btn-primary">
                                                 Submit
@@ -729,7 +729,7 @@ const getCurrentDateTime = () => {
 
 
 
-{updateExamModel && (
+            {updateExamModel && (
                 <div className="modal-overlay">
                     <div className="modal show d-block" tabIndex="-1" role="dialog">
                         <div className="modal-dialog modal-dialog-centered" role="document">
@@ -747,34 +747,39 @@ const getCurrentDateTime = () => {
                                 </div>
                                 <div className="modal-body">
                                     <form>
-                                            {/* Unique ID Field */}
-                                            <div className="row g-2 mt-2">
+                                        {/* Unique ID Field */}
+                                        <div className="row g-2 mt-2">
                                             <div className="col-md-6">
-                                                <label htmlFor="ExamStatus" className="form-label">Exam Status</label>
-                                                <div className="input-group">
-                                                    <span className="input-group-text">
-                                                        <i className="bi bi-people"></i> {/* Bootstrap group icon */}
-                                                    </span>
-                                                    <select
-                                                        className="form-select"
-                                                        id="ExamStatus"
-                                                        value={updateExamStatus}
-                                                        onChange={(e)=>ExamStatusHandling(e)}
-                                                    >
-                                                        {['Scheduled','Running','Closed'].map((status) => (
-                                                            <option key={status} value={status}>
-                                                                {status}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
+                                                {updateExamStatus !== "Closed" ? (
+                                                    <>
+                                                        <label htmlFor="ExamStatus" className="form-label">Exam Status</label>
+                                                        <div className="input-group">
+                                                            <span className="input-group-text">
+                                                                <i className="bi bi-people"></i> {/* Bootstrap group icon */}
+                                                            </span>
+                                                            <select
+                                                                className="form-select"
+                                                                id="ExamStatus"
+                                                                value={updateExamStatus}
+                                                                onChange={(e) => ExamStatusHandling(e)}
+                                                            >
+                                                                {['Scheduled', 'Running', 'Closed'].map((status) => (
+                                                                    <option key={status} value={status}>
+                                                                        {status}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                    </>
+                                                ) : "Exam Declared Alredy"} {/* If status is "Closed", render nothing */}
                                             </div>
+
 
                                             <div className="col-md-6">
                                                 <label htmlFor="Result" className="form-label">Result Status</label>
                                                 <div className="input-group">
                                                     <span className="input-group-text">
-                                                        <i className="bi bi-people"x></i> {/* Bootstrap group icon */}
+                                                        <i className="bi bi-people" x></i> {/* Bootstrap group icon */}
                                                     </span>
                                                     <select
                                                         className="form-select"
@@ -782,16 +787,16 @@ const getCurrentDateTime = () => {
                                                         value={updateExamResult}
                                                         onChange={(e) => ExamResultHandling(e)}
                                                     >
-                                                            <option key="true" value="true">
-                                                                Declared
-                                                            </option>
-                                                            <option key="false" value="false">
-                                                               Not Declared
-                                                            </option>
+                                                        <option key="true" value="true">
+                                                            Declared
+                                                        </option>
+                                                        <option key="false" value="false">
+                                                            Not Declared
+                                                        </option>
                                                     </select>
                                                 </div>
                                             </div>
-                                            </div>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -834,10 +839,10 @@ const getCurrentDateTime = () => {
                                                 <p><strong>Exam Type:</strong> {viewExamData.examType}</p>
                                                 <p><strong>Difficulty:</strong> {viewExamData.examDifficulty}</p>
                                                 <p><strong>Status:</strong> {viewExamData.status}</p>
-                                                <p><strong>Result Declared:</strong> {viewExamData.resultDeclared?"YES":"No"}</p>
+                                                <p><strong>Result Declared:</strong> {viewExamData.resultDeclared ? "YES" : "No"}</p>
                                                 <p><strong>Number of Questions:</strong> {viewExamData.numberOfQuestions}   </p>
                                                 <p><strong>Passing Marks:</strong> {viewExamData.passingMarks}</p>
-                                            <p><strong>Updated At:</strong> {format(new Date(viewExamData.updatedAt), 'dd/MM/yyyy HH:mm:ss')}</p>
+                                                <p><strong>Updated At:</strong> {format(new Date(viewExamData.updatedAt), 'dd/MM/yyyy HH:mm:ss')}</p>
                                             </div>
                                         </div>
                                         <hr />
@@ -855,10 +860,10 @@ const getCurrentDateTime = () => {
                                         <hr />
                                         {/* Buttons */}
                                         <div className="d-flex justify-content-end">
-                                            <button className="btn btn-success me-2" onClick={()=>downloadStudentList(viewExamData.allotments)}>
+                                            <button className="btn btn-success me-2" onClick={() => downloadStudentList(viewExamData.allotments)}>
                                                 <i className="bi bi-download" /> Student List
                                             </button>
-                                            <button className="btn btn-info" onClick={()=>downloadQuestionList(viewExamData.questions)}>
+                                            <button className="btn btn-info" onClick={() => downloadQuestionList(viewExamData.questions)}>
                                                 <i className="bi bi-download" /> Question List
                                             </button>
                                         </div>

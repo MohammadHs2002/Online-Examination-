@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { UserContext } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
-import ExamLogin from './ExamLogin';
 
 const McqExam = () => {
   const [examData, setExamData] = useState(null);
@@ -36,22 +35,21 @@ const McqExam = () => {
       }
   
       if (exam) {
-        const currentExam = exam[0];
+        const currentExam = exam;
         setExamData(currentExam);
   
         // Set total questions
         const total = currentExam.exam.numberOfQuestions;
         setTotalQuestions(total);
-        setAllotmentId(currentExam.allotment.allotmentId);
-  
         // Initialize timer (convert duration to seconds)
         setTimer((currentExam.exam.examDuration - currentExam.allotment.usedTime) * 60); // Assuming duration is in minutes
         fetchExamData(currentExam.allotment.allotmentId); // Fetch answers after examData is set
+        setAllotmentId(currentExam.allotment.allotmentId);
       }
     };
   
     fetchExam(); // Call the async function
-  }, [endpoint, allotmentId]); // Dependency array for `useEffect`
+  }, []); // Dependency array for `useEffect`
   
 
   // Fetch exam data from API
@@ -77,10 +75,8 @@ const McqExam = () => {
         setTimer((prev) => prev - 1);
       }, 1000);
       if(timer%60===0){
-        console.log('hello');
       const minutsUsed = examData.exam.examDuration-Math.floor(timer / 60);
       updateUsedTime(minutsUsed);
-      console.log(allotmentId);
     }
   }else{
     if(examData!=null) updateUsedTime(examData.exam.examDuration);
@@ -168,8 +164,8 @@ const McqExam = () => {
   };
 
 
-  const logSecurityViolation=async(actionType)=>{
-        await axios.post(`${endpoint}/api/exam/securityLog/${allotmentId}`,{
+  const logSecurityViolation=async(actionType,allotId)=>{
+        await axios.post(`${endpoint}/api/exam/securityLog/${allotId}`,{
           action:actionType
         },{
           headers:{
@@ -200,7 +196,7 @@ const McqExam = () => {
     const handleViolation = () => {
       if (!isConfirmTriggeredRef.current) {
         showError("Violation Detected: This will cause you to close the exam.");
-        logSecurityViolation("tab-change");
+        logSecurityViolation("tab-change",allotmentId);
       }
     };
 
@@ -243,7 +239,7 @@ const McqExam = () => {
       document.removeEventListener("keydown", preventReload);
       window.confirm = originalConfirm; // Restore original `window.confirm`
     };
-  }, []);
+  }, [allotmentId]);
 
   useEffect(() => enterFullScreen(), []);
 

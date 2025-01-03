@@ -169,6 +169,9 @@ public class ExamController {
 			Exam e=examServices.getExamById(id);
 			e.setStatus(ExamStatus.valueOf(formData.get("status")));
 			examServices.saveExam(e);
+			if(e.getStatus().equals(ExamStatus.Closed)) {
+				examServices.calculateAllResultsOfExam(e);
+			}
 			return  ResponseEntity.status(HttpStatus.OK).body("Exam Status Updated Sucessfully");
 		}catch(Exception e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
@@ -275,6 +278,22 @@ public class ExamController {
 	    // Assuming the saveAnswer method returns the saved answer or null if there was an issue.
 		int optionId=answerData.get("optionId");
 	    Exam_Answer answer = examServices.saveAnswer(optionId, answerId);
+	    
+	    if (answer != null) {
+	        return ResponseEntity.status(HttpStatus.OK).body(answer);  // Return saved answer with OK status
+	    } else {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                             .body("Something went wrong while saving the answer.");
+	    }
+	}
+	
+	
+	
+	@PostMapping("/submitProgramingAnswer/{answerId}")
+	public ResponseEntity<?> submitAnswerPrograming(@RequestBody Map<String,String> answerData, @PathVariable int answerId) {
+	    // Assuming the saveAnswer method returns the saved answer or null if there was an issue.
+		String code=answerData.get("code");
+	    Exam_Answer answer = examServices.saveProgramingAnswer(code, answerId);
 	    
 	    if (answer != null) {
 	        return ResponseEntity.status(HttpStatus.OK).body(answer);  // Return saved answer with OK status

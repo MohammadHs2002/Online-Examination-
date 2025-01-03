@@ -31,7 +31,6 @@ import com.example.Repository.ExamRepo;
 import com.example.Repository.ExamResultRepo;
 import com.example.Repository.ExamSecurityRepo;
 import com.example.Repository.GroupRepo;
-import com.example.Repository.MCQOptionRepo;
 import com.example.Repository.ProgramingQuestionRepo;
 import com.example.Repository.QuestionRepo;
 import com.example.Repository.StudentRepo;
@@ -227,6 +226,14 @@ public class ExamServices {
 		return examAnswerRepo.save(answer);
 	}
 	
+	
+	public Exam_Answer saveProgramingAnswer(String code,int answerId) {
+		Exam_Answer answer=examAnswerRepo.findById(answerId).get();
+		answer.setProgrammingAnswerText(code);
+		answer.setIsAnswered(true);
+		return examAnswerRepo.save(answer);
+	}
+	
 	public boolean updateUsedTime(int usedTime,int allotmentId) {
 		try {
 		Exam_Allotment allotment=allotmentRepo.findById(allotmentId).get();
@@ -255,12 +262,49 @@ public class ExamServices {
 	public boolean submitSingleExam(int allotmentId) {
 		try {
 		Exam_Allotment allotment=allotmentRepo.findById(allotmentId).get();
+		if(allotment.getExam().getExamType().equals(ExamType.MCQ)) {
 		Exam_Result result=calculateResult(allotment);
 		examResultRepo.save(result);
-		allotment.setIsSubmited(true);
+		}else {
+			if(allotment.getSecurityLog().getIsSuspicious()) {
+				Exam_Result result=allotment.getResults();
+				result.setResultStatus(ResultStatus.Disqualified);
+				examResultRepo.save(result);
+			}
+			allotment.setIsSubmited(true);
+		}
 		allotmentRepo.save(allotment);
 		return true;
 		}catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public boolean calculateAllResultsOfExam(Exam e) {
+		try {
+		List<Exam_Allotment> Allallotment=e.getAllotments();
+		for(Exam_Allotment allotment:Allallotment) {
+			if(allotment.getIsAppeared()) {
+				if(allotment.getExam().getExamType().equals(ExamType.MCQ)) {
+				Exam_Result result=calculateResult(allotment);
+				examResultRepo.save(result);
+				}else {
+					if(allotment.getSecurityLog().getIsSuspicious()) {
+						Exam_Result result=allotment.getResults();
+						result.setResultStatus(ResultStatus.Disqualified);
+						examResultRepo.save(result);
+					}
+					allotment.setIsSubmited(true);
+				}
+				allotmentRepo.save(allotment);
+			}else {
+				Exam_Result result=allotment.getResults();
+				result.setResultStatus(ResultStatus.Fail);
+				examResultRepo.save(result);
+			}
+		}
+		return true;
+		}catch (Exception ex) {
 			return false;
 		}
 	}

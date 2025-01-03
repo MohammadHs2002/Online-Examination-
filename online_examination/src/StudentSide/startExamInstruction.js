@@ -43,7 +43,7 @@ const StartExamInstruction = () => {
     };
 
     validateSession();
-  }, [Examlogout, generateJwt, navigate]); // Add dependencies here
+  }, []); // Add dependencies here
 
   return (
     <div>

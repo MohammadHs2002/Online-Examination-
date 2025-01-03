@@ -39,7 +39,6 @@ const StudentDashboard = () => {
         "Authorization": `Bearer ${localStorage.getItem("JwtToken")}`
       }
     }).then(res => {
-      console.log(res);
       const allotments = res.data;
       setExamData(allotments);
       let filteredData = allotments.filter(exam => exam.exam.status === "Scheduled");
@@ -64,13 +63,11 @@ const StudentDashboard = () => {
   const startExam = (examId) => {
       const exam=runningExams.filter(exam => exam.exam.examId === examId);
       localStorage.setItem("exam",JSON.stringify(exam));
-      console.log(exam);
       navigate("/examLogin");
   }
 
   const viewCompletedExamDetaile = (examId) => {
     const exam = closedExams.filter(exam => exam.exam.examId === examId);
-    console.log(exam);
     setViewCompletedExam(exam);
     setViewCompletedExamModel(true);
   }
