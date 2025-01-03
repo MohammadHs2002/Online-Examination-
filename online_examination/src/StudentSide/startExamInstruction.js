@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 const StartExamInstruction = () => {
   const [isAgreed, setIsAgreed] = useState(false);
-  const { Examlogout, generateJwt } = useContext(UserContext);
+  const { Examlogout, generateJwt,showError } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleCheckboxChange = () => {
@@ -15,7 +15,10 @@ const StartExamInstruction = () => {
 
   const handleStartExam = () => {
     if (isAgreed) {
-      navigate("/student/mcq-exam");
+      const exam=JSON.parse(localStorage.getItem("exam"));
+      if(exam[0].exam.examType==="MCQ")navigate("/student/mcq-exam");
+      else if(exam[0].exam.examType==="PROGRAMMING")navigate("/student/programing-exam");
+      else showError("Somthing went wrong please try Again");
     }
   };
 

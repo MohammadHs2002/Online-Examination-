@@ -5,8 +5,9 @@ import axios from 'axios';
 import { UserContext } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
 import ExamLogin from './ExamLogin';
+import CodeEditor from './CodeEditor';
 
-const McqExam = () => {
+const ProgramingExam = () => {
   const [examData, setExamData] = useState(null);
   const [timer, setTimer] = useState(0); // Timer in seconds
   const [totalQuestions, setTotalQuestions] = useState(0);
@@ -15,6 +16,7 @@ const McqExam = () => {
   const { endpoint, JwtToken,showError,Examlogout } = useContext(UserContext);
   const [allotmentId,setAllotmentId]=useState(0);
   const isConfirmTriggeredRef = useRef(false);
+  const [compiledOutput,setCompiledOutput] =useState(null);
   // Calculate Completed and Remaining Questions
   const completedQuestions = answers.filter((answer) => answer.selectedOptionId).length;
   const remainingQuestions = totalQuestions - completedQuestions;
@@ -30,7 +32,6 @@ const McqExam = () => {
             Authorization: `Bearer ${localStorage.getItem('JwtToken')}`,
           },
         });
-        exam=response.data;
       } catch (error) {
         console.error('Error fetching exam data:', error);
       }
@@ -127,45 +128,57 @@ const McqExam = () => {
         })
   }
 
-  const handleOptionChange = (optionId) => {
-    const updatedAnswers = [...answers];
-    updatedAnswers[currentQuestionIndex] = {
-      ...updatedAnswers[currentQuestionIndex],
-      selectedOptionId: optionId, // Update selected option for the current question
-    };
-    setAnswers(updatedAnswers); 
-  };
 
-  const resetOption = () => {
+  const handleCodeChange = (index, newCode) => {
     const updatedAnswers = [...answers];
-    updatedAnswers[currentQuestionIndex] = {
-      ...updatedAnswers[currentQuestionIndex],
-      selectedOptionId: '', // Update selected option for the current question
-    };
+    updatedAnswers[index].programmingAnswerText = newCode;
     setAnswers(updatedAnswers);
-
   };
+  
 
-  const submitAnswer = async (answerId, selectedOptionId) => {
+  const submitCode = async (answerId, code) => {
     try {
-      const response = await axios.post(
-        `${endpoint}/api/exam/submitMcqAnswer/${answerId}`,
-        { optionId: selectedOptionId },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('JwtToken')}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        fetchExamData(examData.allotment.allotmentId); // Re-fetch the updated exam data
-        setCurrentQuestionIndex((prev) => Math.min(prev + 1, answers.length - 1));
-      }
+      const response = await axios.post(`${endpoint}/api/compile`, {
+        answerId,
+        code,
+      });
+      setCompiledOutput(response.data.output);
+      showError("Code compiled successfully!",1000,"success");
     } catch (error) {
-      console.error('Error submitting answer:', error);
+      console.error("Compilation error:", error);
+      setCompiledOutput("Error in code compilation.");
+      showError("Something went wrong during compilation.");
     }
   };
+
+  
+  const resetCode = () => {
+    const updatedAnswers = [...answers];
+    updatedAnswers[currentQuestionIndex].programmingAnswerText = "";
+    setAnswers(updatedAnswers);
+  };
+  
+
+//   const submitAnswer = async (answerId, selectedOptionId) => {
+//     try {
+//       const response = await axios.post(
+//         `${endpoint}/api/exam/submitMcqAnswer/${answerId}`,
+//         { optionId: selectedOptionId },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${localStorage.getItem('JwtToken')}`,
+//           },
+//         }
+//       );
+
+//       if (response.status === 200) {
+//         fetchExamData(examData.allotment.allotmentId); // Re-fetch the updated exam data
+//         setCurrentQuestionIndex((prev) => Math.min(prev + 1, answers.length - 1));
+//       }
+//     } catch (error) {
+//       console.error('Error submitting answer:', error);
+//     }
+//   };
 
 
   const logSecurityViolation=async(actionType)=>{
@@ -308,64 +321,75 @@ const McqExam = () => {
               </div>
             </div>
           </div>
+          <div className="container mt-4">
+  <div className="row">
+    {answers[currentQuestionIndex] && (
+      <>
+        {/* Question Definition */}
+        <div className="col-md-4">
+          <h4>Question {currentQuestionIndex + 1}: {answers[currentQuestionIndex]?.question?.programQuestion?.title}</h4>
+          <p><strong>Description:</strong> {answers[currentQuestionIndex]?.question?.programQuestion?.description}</p>
+          <p><strong>Sample Input:</strong></p>
+          <pre>{answers[currentQuestionIndex]?.question?.programQuestion?.sampleInput}</pre>
+          <p><strong>Sample Output:</strong></p>
+          <pre>{answers[currentQuestionIndex]?.question?.programQuestion?.sampleOutput}</pre>
+          <p><strong>Hints:</strong> {answers[currentQuestionIndex]?.question?.programQuestion?.hints}</p>
+        </div>
+
+        {/* Code Editor */}
+        <div className="col-md-4">
+          <h4>Code Editor</h4>
+          <CodeEditor value={answers[currentQuestionIndex]?.programmingAnswerText || ""} handleValue={(currentQuestionIndex,value)=>handleCodeChange(
+                currentQuestionIndex,
+                value
+              )}/>
+          <div className="mt-3">
+            <button
+              className="btn btn-secondary mr-2 m-2"
+              onClick={() => setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0))}
+              disabled={currentQuestionIndex === 0}
+            >
+              Previous
+            </button>
+            <button
+              className="btn btn-success"
+              onClick={() => submitCode(answers[currentQuestionIndex]?.answerId, answers[currentQuestionIndex]?.programmingAnswerText)}
+              disabled={!answers[currentQuestionIndex]?.programmingAnswerText}
+            >
+              Save & Compile
+            </button>
+            <button
+              className="btn btn-primary ml-2 m-2"
+              onClick={() => setCurrentQuestionIndex((prev) => Math.min(prev + 1, answers.length - 1))}
+              disabled={currentQuestionIndex === answers.length - 1}
+            >
+              Next
+            </button>
+            <button
+              className="btn btn-warning ml-2 m-2"
+              onClick={() => resetCode()}
+              disabled={!answers[currentQuestionIndex]?.programmingAnswerText}
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        {/* Compiled Output */}
+        <div className="col-md-4">
+          <h4>Compiled Output</h4>
+          {compiledOutput ? (
+            <pre className="bg-light p-3">{compiledOutput}</pre>
+          ) : (
+            <p>No output yet. Compile your code to see the result.</p>
+          )}
+        </div>
+      </>
+    )}
+  </div>
+</div>
 
           {/* Question Section */}
-          <hr />
-          <div className="row mt-4">
-            <div className="col-md-8 offset-md-2">
-              {answers[currentQuestionIndex] && (
-                <div>
-                  <h3>{currentQuestionIndex + 1}. {answers[currentQuestionIndex]?.question.mcqQuestion.text}</h3>
-                  {answers[currentQuestionIndex]?.question.mcqQuestion.options.map((option) => (
-                    <div className="form-check" key={option.option_id}>
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="options"
-                        id={`option-${option.option_id}`}
-                        value={option.option_id}
-                        checked={answers[currentQuestionIndex]?.selectedOptionId === option.option_id}
-                        onChange={() => handleOptionChange(option.option_id)}
-                      />
-                      <label className="form-check-label" htmlFor={`option-${option.option_id}`}>
-                        {option.text}
-                      </label>
-                    </div>
-                  ))}
-                  <div className="mt-3">
-                    <button
-                      className="btn btn-secondary mr-2 m-2"
-                      onClick={() => setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0))}
-                      disabled={currentQuestionIndex === 0}
-                    >
-                      Previous
-                    </button>
-                    <button
-                      className="btn btn-success"
-                      onClick={() => submitAnswer(answers[currentQuestionIndex]?.answerId, answers[currentQuestionIndex]?.selectedOptionId)}
-                      disabled={answers[currentQuestionIndex]?.selectedOptionId===null}
-                    >
-                      Save & Next
-                    </button>
-                    <button
-                      className="btn btn-primary ml-2 m-2"
-                      onClick={() => setCurrentQuestionIndex((prev) => Math.min(prev + 1, answers.length - 1))}
-                      disabled={currentQuestionIndex === answers.length - 1}
-                    >
-                      Next
-                    </button>
-                    <button
-                      className="btn btn-warning ml-2 m-2"
-                      onClick={() => resetOption()}
-                      disabled={answers[currentQuestionIndex]?.selectedOptionId===null}
-                    >
-                      reset
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       ) : (
         <div className="container mt-4">
@@ -376,4 +400,4 @@ const McqExam = () => {
   );
 };
 
-export default McqExam;
+export default ProgramingExam;

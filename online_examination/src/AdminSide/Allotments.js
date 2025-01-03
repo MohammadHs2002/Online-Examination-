@@ -17,6 +17,16 @@ const Allotments = () => {
 
   const { JwtToken, endpoint, showError, generateJwt } = useContext(UserContext);
   const tooltipRef = useRef(null);
+  const [viewSuspeciousModel, setViewSuspeciousModel] = useState(false);
+  const [viewResultModel, setViewResultModel] = useState(false);
+  //for filtering
+  //Question tabel data
+  const [data, setData] = useState([]);
+  const [filterData, setFilterData] = useState([]);
+  const [suspeciusData,setSuspeciusData]=useState(null);
+  const [resultData,setResultData]=useState(null);
+  const [studentGroup, setStudentGroup] = useState([]);
+  const [tempData,setTempData] = useState([]);
 
   //exam allotment Tabel Columns
   const examColumn = useMemo(() => [
@@ -74,7 +84,7 @@ const Allotments = () => {
         <span
           className="text-warning"
           style={{ cursor: 'pointer', fontSize: '18px' }}
-          onClick={() => ViewSuspeciusActivity(row.original.allotment.allotmentId)}
+          onClick={() => ViewSuspeciusActivity(row.original.allotment)}
         >
           <FontAwesomeIcon icon={faEye} />
         </span>
@@ -88,7 +98,7 @@ const Allotments = () => {
         <span
           className="text-warning"
           style={{ cursor: 'pointer', fontSize: '18px' }}
-          onClick={() => ViewResult(row.original.allotment.allotmentId)}
+          onClick={() => ViewResult(row.original.allotment)}
         >
           <FontAwesomeIcon icon={faEye} />
         </span>
@@ -118,15 +128,7 @@ const Allotments = () => {
     }
   ], []);
 
-  const [viewSuspeciousModel, setViewSuspeciousModel] = useState(false);
-  const [viewResultModel, setViewResultModel] = useState(false);
-  //for filtering
-  //Question tabel data
-  const [data, setData] = useState([]);
-  const [filterData, setFilterData] = useState([]);
-  const [suspeciusData,setSuspeciusData]=useState(null);
-  const [resultData,setResultData]=useState(null);
-  const [studentGroup, setStudentGroup] = useState([]);
+
 
 
   //Delete Question
@@ -172,6 +174,7 @@ const Allotments = () => {
       .then(res => {
         setData(res.data);
         setFilterData(res.data);
+        setTempData(res.data);
       })
       .catch(error => {
         if (error.status === 404) {
@@ -224,16 +227,13 @@ const Allotments = () => {
 
 
   //loading data of pertcular allotment
-  const ViewResult = (allotmentId) => {
-        console.log(data);
-        const allotment=  data.filter(exam => exam.allotment.allotmentId===allotmentId);
-        setResultData(allotment[0].allotment.results);
+  const ViewResult = (allotment) => {
+        setResultData(allotment.results);
         setViewResultModel(true);
   }
 
-  const ViewSuspeciusActivity=(allotmentId)=>{
-    const allotment= data.filter(exam => exam.allotment.allotmentId===allotmentId);
-    setSuspeciusData(allotment[0].allotment.securityLog);
+  const ViewSuspeciusActivity=(allotment)=>{
+    setSuspeciusData(allotment.securityLog);
     setViewSuspeciousModel(true);
   }
 

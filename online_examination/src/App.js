@@ -26,6 +26,7 @@ import StudentDashboard from './StudentSide/StudentDashboard';
 import ExamLogin from './StudentSide/ExamLogin';
 import StartExamInstruction from './StudentSide/startExamInstruction';
 import McqExam from './StudentSide/McqExam';
+import ProgramingExam from './StudentSide/ProgramingExam';
 
 
 function App() {
@@ -82,6 +83,7 @@ function App() {
                 <Route index element={<StudentDashboard/>}/>
                 <Route path='exam-instruction' element={<PrivateRoutesExam><StartExamInstruction/></PrivateRoutesExam>}/>
                 <Route path='mcq-exam' element={<PrivateRoutesExam><McqExam/></PrivateRoutesExam>}/>
+                <Route path='programing-exam' element={<PrivateRoutesExam><ProgramingExam/></PrivateRoutesExam>}/>
             </Route>
             <Route path="*" element={<NoPage />} />
             </Routes>
