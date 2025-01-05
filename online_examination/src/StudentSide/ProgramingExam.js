@@ -8,6 +8,7 @@ import ExamLogin from './ExamLogin';
 import CodeEditor from './CodeEditor';
 
 const ProgramingExam = () => {
+  //use full useStates
   const [examData, setExamData] = useState(null);
   const [timer, setTimer] = useState(0); // Timer in seconds
   const [totalQuestions, setTotalQuestions] = useState(0);
@@ -70,7 +71,7 @@ const ProgramingExam = () => {
       const data = response.data;
       setAnswers(data.allotment.answers); // Store the answers for all questions
     } catch (error) {
-      console.error('Error fetching  exam data:', error);
+      // console.error('Error fetching  exam data:', error);
     }
   };
 
@@ -82,10 +83,8 @@ const ProgramingExam = () => {
         setTimer((prev) => prev - 1);
       }, 1000);
       if (timer % 60 === 0) {
-        console.log('hello');
         const minutsUsed = examData.exam.examDuration - Math.floor(timer / 60);
         updateUsedTime(minutsUsed);
-        console.log(allotmentId);
       }
     } else {
       if (examData != null) updateUsedTime(examData.exam.examDuration);
@@ -122,7 +121,6 @@ const ProgramingExam = () => {
         "Authorization": `Bearer ${localStorage.getItem('JwtToken')}`
       }
     }).then(res => {
-      // console.log(res);
       localStorage.removeItem('exam');
       window.location.href = "http://localhost:3000/student";
       Examlogout();
@@ -132,6 +130,7 @@ const ProgramingExam = () => {
       })
   }
 
+  //handling code change
 
   const handleCodeChange = (index, newCode) => {
     const updatedAnswers = [...answers];
@@ -139,6 +138,7 @@ const ProgramingExam = () => {
     setAnswers(updatedAnswers);
   };
 
+  //saving code to backend 
   const saveUpdatedCode=async(answerId,code)=>{
     try {
             const response = await axios.post(
@@ -160,6 +160,7 @@ const ProgramingExam = () => {
   }
 
 
+  //handling submit-run code
   const submitCode = async (answerId, code) => {
     try {
       saveUpdatedCode(answerId,code);
@@ -186,6 +187,8 @@ const ProgramingExam = () => {
   };
 
 
+  //reseting code 
+
   const resetCode = () => {
     const updatedAnswers = [...answers];
     updatedAnswers[currentQuestionIndex].programmingAnswerText = "";
@@ -195,6 +198,7 @@ const ProgramingExam = () => {
 
 
 
+  //log the security violation during exam
   const logSecurityViolation = async (actionType,allotId) => {
     await axios.post(`${endpoint}/api/exam/securityLog/${allotId}`, {
       action: actionType
@@ -214,14 +218,14 @@ const ProgramingExam = () => {
   }
 
 
+  //preventing copy pasting during exam
   const preventCopyPasting = (e) => {
     e.preventDefault();
-    showError("Copy Pasting is Not Allowd During Exam");
   };
-  const enterFullScreen = () => {
-    const elem = document.documentElement;
-    if (elem.requestFullscreen) elem.requestFullscreen();
-  };
+  // const enterFullScreen = () => {
+  //   const elem = document.documentElement;
+  //   if (elem.requestFullscreen) elem.requestFullscreen();
+  // };
 
   useEffect(() => {
     const handleViolation = () => {
@@ -242,12 +246,14 @@ const ProgramingExam = () => {
       return result;
     };
 
+    //this function handle if student go away during exam
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden" && !isConfirmTriggeredRef.current) {
         handleViolation();
       }
     };
 
+    //prevent reload during exam
     const preventReload = (e) => {
       e.preventDefault();
       showError("Page reload is not allowed during the exam.");
@@ -262,6 +268,7 @@ const ProgramingExam = () => {
       }
     });
 
+    //loadning pyodide libray that run python code
     const loadPyodideLibrary = async () => {
       try {
         // Dynamically load the Pyodide script from CDN
@@ -296,7 +303,6 @@ const ProgramingExam = () => {
     };
   }, [allotmentId]);
 
-  useEffect(() => enterFullScreen(), []);
 
   return (
     <div onCopy={preventCopyPasting}

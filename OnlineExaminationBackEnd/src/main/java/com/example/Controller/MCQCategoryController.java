@@ -24,6 +24,8 @@ public class MCQCategoryController {
 	@Autowired
 	private CategoryServices categoryServices;
 	
+	
+	//fetching All Mcq category 
 	@GetMapping
 	public ResponseEntity<?> getAllCategory(){
 		List<MCQCategory> categorys=categoryServices.getAllCatagory();
@@ -34,6 +36,7 @@ public class MCQCategoryController {
 		}
 	}
 	
+	//fetching  Mcq category with  id
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getCategoryById(@PathVariable int id){
 		MCQCategory category=categoryServices.getCategoryById(id);
@@ -44,15 +47,19 @@ public class MCQCategoryController {
 		}
 	}
 	
+	//creating new Mcq category
 	@PostMapping
 	public ResponseEntity<?> saveCategory(@RequestBody MCQCategory category){
+		//checking null
 		if(category.getName()=="" || category.getName()==null) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Plese Provide Category Name");
 		}else {
 			try {
+				//checking if same category alredy exists or not
 				if(categoryServices.getByCategoryName(category.getName())!=null) {
 					return ResponseEntity.status(HttpStatus.CONFLICT).body("Category Alredy Exists");
 				}
+				//returning newly created mcq category
 				MCQCategory savedCategory=categoryServices.saveCategory(category);
 				return ResponseEntity.status(HttpStatus.OK).body(savedCategory);
 			}catch(Exception e) {
@@ -61,6 +68,7 @@ public class MCQCategoryController {
 		}
 	}
 	
+	//updating mcq category
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateCategory(@PathVariable int id,@RequestBody MCQCategory category){
 		MCQCategory existingCategory=categoryServices.getCategoryById(id);
@@ -68,6 +76,7 @@ public class MCQCategoryController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Category Found");
 		}else {
 			try {
+				//checking if new category name is not used already
 			if(existingCategory.getName()!=category.getName() && category.getName()!="" && category.getName()!=null) {
 				existingCategory.setName(category.getName());
 				return ResponseEntity.status(HttpStatus.OK).body(categoryServices.saveCategory(existingCategory));
@@ -78,6 +87,7 @@ public class MCQCategoryController {
 		}
 	}
 	
+	//deleting  Mcq category with id
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteCategory(@PathVariable int id){
 		if(categoryServices.getCategoryById(id)!=null) {
@@ -88,6 +98,7 @@ public class MCQCategoryController {
 		}
 	}
 	
+	//deleting multiple Mcq category
 	@PostMapping("/deleteMultiple")
 	public ResponseEntity<?> deleteCategory(@RequestBody List<MCQCategory> categorys){
 		try {

@@ -6,6 +6,7 @@ import { UserContext } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
 
 const McqExam = () => {
+  //some usefull useStates
   const [examData, setExamData] = useState(null);
   const [timer, setTimer] = useState(0); // Timer in seconds
   const [totalQuestions, setTotalQuestions] = useState(0);
@@ -48,11 +49,11 @@ const McqExam = () => {
       }
     };
   
-    fetchExam(); // Call the async function
-  }, []); // Dependency array for `useEffect`
+    fetchExam();
+  }, []); 
   
 
-  // Fetch exam data from API
+  // Fetch exam data
   const fetchExamData = async (allotmentId) => {
     try {
       const response = await axios.get(`${endpoint}/api/exam/allotments/${allotmentId}`, {
@@ -106,23 +107,24 @@ const McqExam = () => {
     })
   }
 
-
+//close exam function for closing exam and redirecting student
   const closeExam=()=>{
         axios.get(`${endpoint}/api/exam/submitExam/${allotmentId}`,{
           headers:{
             "Authorization":`Bearer ${localStorage.getItem('JwtToken')}`
           }
         }).then(res=>{
-          // console.log(res);
           localStorage.removeItem('exam');
           window.location.href = "http://localhost:3000/student";
           Examlogout();
         })
         .catch(error=>{
-          console.log(error);
+          showError("Somthing went wrong while closing exam");
         })
   }
 
+
+  //handling option change and setting is to answer array
   const handleOptionChange = (optionId) => {
     const updatedAnswers = [...answers];
     updatedAnswers[currentQuestionIndex] = {
@@ -132,6 +134,7 @@ const McqExam = () => {
     setAnswers(updatedAnswers); 
   };
 
+  //reseting option
   const resetOption = () => {
     const updatedAnswers = [...answers];
     updatedAnswers[currentQuestionIndex] = {
@@ -142,6 +145,7 @@ const McqExam = () => {
 
   };
 
+  //submititng answer
   const submitAnswer = async (answerId, selectedOptionId) => {
     try {
       const response = await axios.post(
@@ -159,11 +163,11 @@ const McqExam = () => {
         setCurrentQuestionIndex((prev) => Math.min(prev + 1, answers.length - 1));
       }
     } catch (error) {
-      console.error('Error submitting answer:', error);
+      showError('Error submitting answer:', error.data);
     }
   };
 
-
+//log security violation during exam
   const logSecurityViolation=async(actionType,allotId)=>{
         await axios.post(`${endpoint}/api/exam/securityLog/${allotId}`,{
           action:actionType
@@ -178,19 +182,18 @@ const McqExam = () => {
           }
         })
         .catch(error=>{
-          console.log(error);
+          showError("")
         })
   }
 
 
   const preventCopyPasting = (e) => {
     e.preventDefault();
-    showError("Copy Pasting is Not Allowd During Exam");
   };
-  const enterFullScreen = () => {
-    const elem = document.documentElement;
-    if (elem.requestFullscreen) elem.requestFullscreen();
-  };
+  // const enterFullScreen = () => {
+  //   const elem = document.documentElement;
+  //   if (elem.requestFullscreen) elem.requestFullscreen();
+  // };
 
   useEffect(() => {
     const handleViolation = () => {
@@ -240,8 +243,6 @@ const McqExam = () => {
       window.confirm = originalConfirm; // Restore original `window.confirm`
     };
   }, [allotmentId]);
-
-  useEffect(() => enterFullScreen(), []);
 
   return (
     <div onCopy={preventCopyPasting}

@@ -20,6 +20,8 @@ const StudentDashboard = () => {
   const [viewCompletedExamModel, setViewCompletedExamModel] = useState(false);
   const [viewCompletedExam, setViewCompletedExam] = useState([]);
 
+
+  //logout function
   const handleLogout = () => {
     if (window.confirm("Are You Sure Want To Logout ?")) {
       axios.post(`${endpoint}/api/log/logout`, user, {
@@ -33,6 +35,7 @@ const StudentDashboard = () => {
   };
 
 
+  //loading students allotments 
   const LoadData = () => {
     axios.post(`${endpoint}/api/exam/get_allotments`,user, {
       headers: {
@@ -41,6 +44,7 @@ const StudentDashboard = () => {
     }).then(res => {
       const allotments = res.data;
       setExamData(allotments);
+      //filtering allotment to scheduled , running,close exam
       let filteredData = allotments.filter(exam => exam.exam.status === "Scheduled");
       setScheduledExams(filteredData);
       filteredData = allotments.filter(exam => exam.exam.status === "Running" && !exam.allotment.isSubmited);
@@ -54,18 +58,20 @@ const StudentDashboard = () => {
     })
   }
 
+  //viewing sheduled exam details
   const viewSheduledExamDetailes = (examId) => {
     const exam = scheduledExams.filter(exam => exam.exam.examId === examId);
     setViewSheduledExam(exam);
     setViewSheduledExamModel(true);
   }
 
+  //starting perticular exam
   const startExam = (examId) => {
       const exam=runningExams.filter(exam => exam.exam.examId === examId);
       localStorage.setItem("exam",JSON.stringify(exam));
       navigate("/examLogin");
   }
-
+//view result of completed exam
   const viewCompletedExamDetaile = (examId) => {
     const exam = closedExams.filter(exam => exam.exam.examId === examId);
     setViewCompletedExam(exam);

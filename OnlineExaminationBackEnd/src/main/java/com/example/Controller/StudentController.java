@@ -50,7 +50,7 @@ public class StudentController {
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
-	
+	//fetch all student
 	@GetMapping
 	public ResponseEntity<?> getAllStudent() {
 		List<Student> student=studentService.getAllStudent();
@@ -59,7 +59,7 @@ public class StudentController {
 		}
 		return ResponseEntity.ok(student);
 	}
-	
+	//fetch  student with id
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getStudentById(@PathVariable int id) {
 		Student student=studentService.getStudentById(id);
@@ -69,6 +69,7 @@ public class StudentController {
 		return ResponseEntity.ok(student);
 	}
 	
+	//create new student
 	@PostMapping
 	public ResponseEntity<?> createGroup(@RequestBody StudentDto student) {
 		System.out.print(student);
@@ -132,7 +133,7 @@ public class StudentController {
 	    }
 	}
 
-	
+	//update student controller
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateStudent(@PathVariable int id, @RequestBody StudentDto student) {
 		Student existingStudent=studentService.getStudentById(id);
@@ -173,6 +174,7 @@ public class StudentController {
 		}
 	}
 	
+	//deleting student with id
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteStudent(@PathVariable int id){
 		Student student=studentService.getStudentById(id);
@@ -184,7 +186,7 @@ public class StudentController {
 		}
 	}
 	
-	
+	//deleting multiple student
 	@PostMapping("/multiple")
 	public ResponseEntity<?> deleteMultipleStudent(@RequestBody List<Student> students){
 		try {
@@ -197,7 +199,7 @@ public class StudentController {
 		}
 	}
 	
-	
+	//creating multple student with csv upload
     @PostMapping("/upload-csv")
     public ResponseEntity<?> uploadCsv(@RequestParam("file") MultipartFile file, @RequestParam("groupId") int groupId) {
         if (file.isEmpty()) {
@@ -258,6 +260,7 @@ public class StudentController {
         return ResponseEntity.ok("File processed successfully. Number of records: " + students.size());
     }
 
+    //read csv file and covert it to studen list
     private List<StudentDto> processCsvToStudentDto(MultipartFile file) throws Exception {
         List<StudentDto> students = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
@@ -306,6 +309,7 @@ public class StudentController {
         return students;
     }
     
+    //validating student details
     private String checkStudentDetailes(StudentDto student) {
     	String ErrorMessage="";
     	if(student.getNumber().toString().length()!=10) {

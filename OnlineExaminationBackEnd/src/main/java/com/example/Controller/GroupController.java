@@ -33,6 +33,7 @@ public class GroupController {
 	@Autowired
 	private StudentService studentService;
 	
+	//fetching all student groups
 	@GetMapping
 	public ResponseEntity<?> getAllGroups() {
 		List<Group> groups=groupService.getAllGroup();
@@ -42,6 +43,7 @@ public class GroupController {
 		return ResponseEntity.ok(groups);
 	}
 	
+	//fetching  student groups by id
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getGroupsById(@PathVariable int id) {
 		Group groups=groupService.getGroupById(id);
@@ -51,6 +53,7 @@ public class GroupController {
 		return ResponseEntity.ok(groups);
 	}
 	
+	//creating new student groups
 	@PostMapping
 	public ResponseEntity<?> createGroup(@RequestBody Group group){
 		if(group.getName()!=null) {
@@ -64,6 +67,7 @@ public class GroupController {
 		}
 	}
 	
+	//fetching  student groups by id
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateGroup(@PathVariable int id, @RequestBody Group group) {
 		Group existingGroup=groupService.getGroupById(id);
@@ -81,6 +85,7 @@ public class GroupController {
 		}
 	}
 	
+	//deleting  student groups by id
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteGroup(@PathVariable int id){
 		Group existingGroup=groupService.getGroupById(id);
@@ -96,6 +101,8 @@ public class GroupController {
 		}
 	}
 	
+	
+	//deleting multiple student groups
 	@PostMapping("/multiple")
 	public ResponseEntity<?> deleteMultipleGroups(@RequestBody List<Group> groups){
 		try {

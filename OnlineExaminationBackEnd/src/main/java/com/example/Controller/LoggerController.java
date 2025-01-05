@@ -27,6 +27,7 @@ public class LoggerController {
 	@Autowired
 	private LoggerService logService;
 	
+	//fetching all user login log
 	@GetMapping
 	public ResponseEntity<?> getAllLog(){
 		List<Logger> logs=logService.getAllLog();
@@ -36,6 +37,7 @@ public class LoggerController {
 			return ResponseEntity.ok(logs);
 		}
 	}
+	//creating  user login log
 	@PostMapping
 	public ResponseEntity<?> createLog(@RequestBody Logger log){
 		if((log.getIpAddress()!=null || log.getMacAddress()!=null) && log.getUser()!=null) {
@@ -46,6 +48,7 @@ public class LoggerController {
 		
 	}
 	
+	//handling  user logout log
 	@PostMapping("logout")
 	public ResponseEntity<?>  logoutlog(@RequestBody Users user,HttpServletRequest request){
 		Logger log=new Logger();

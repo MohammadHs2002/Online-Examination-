@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Entity.ProgramingQuestion;
+import com.example.Entity.Question.Difficulty;
 import com.example.Service.ProgramQuestionService;
 
 
@@ -28,6 +29,8 @@ public class ProgramQuestionController {
 	@Autowired
 	private ProgramQuestionService services;
 	
+	
+	//fetching all programming Quetions
 	@GetMapping 
 	private  ResponseEntity<?> getAllQuestion(){
 		List<ProgramingQuestion> questions=services.getAllQuestions();
@@ -37,7 +40,7 @@ public class ProgramQuestionController {
 			return ResponseEntity.status(HttpStatus.OK).body(questions);
 		}
 	}
-	
+	//fetching  programming Questions with id
 	@GetMapping("/{id}")
 	private  ResponseEntity<?> getQuestionById(@PathVariable int id){
 		ProgramingQuestion question=services.getQuestionById(id);
@@ -48,10 +51,13 @@ public class ProgramQuestionController {
 		}
 	}
 	
+	//creating new programming Quetions
 	@PostMapping
 	private ResponseEntity<?> saveQuestion(@RequestBody ProgramingQuestion question){
+		//validating question
 		String error_message=validateQuestion(question,false);
 		try {
+			//if error message not null send response message 
 			if(!error_message.equals("")) return ResponseEntity.status(HttpStatus.CONFLICT).body(error_message);
 			ProgramingQuestion newQuestion = services.saveQuestion(question);
 			return ResponseEntity.status(HttpStatus.OK).body(newQuestion);
@@ -61,22 +67,23 @@ public class ProgramQuestionController {
 	}
 	
 	
+	//validating question
 	private String validateQuestion(ProgramingQuestion question,boolean forupdate) {
+		
+		//checking null requirement
 		if(question.getTitle()==null || question.getTitle()=="") return "Question Title Rqueired";
-		
-		if(!forupdate) {
-		if(services.getQuestionByTitle(question.getTitle())!=null) return "Question title Alredy Exists";
-		}
-		
 	    if(question.getDescription()==null || question.getDescription()=="") return "Question Description Rqueired";
-		
 	    
 	    if(question.getReferenceAnswer()==null || question.getReferenceAnswer()=="") return "Refrence Answer Rqueired";
 	    
 	    if(question.getDifficulty()==null) return "question Difficulty Rqueired";
-		
-	    if(question.getDifficulty().equals("HARD") || question.getDifficulty().equals("MEDIUM") || question.getDifficulty().equals("EASY")) return "Difficulty Must be In(HARD,MEDIUM,EASY)";
 	    
+	    //checking if Question already exists
+		if(!forupdate) {
+		if(services.getQuestionByTitle(question.getTitle())!=null) return "Question title Alredy Exists";
+		}
+		
+	    if(question.getDifficulty().equals(Difficulty.HARD) || question.getDifficulty().equals(Difficulty.MEDIUM) || question.getDifficulty().equals(Difficulty.EASY)) return "Difficulty Must be In(HARD,MEDIUM,EASY)";
 		return "";
 	}
 	

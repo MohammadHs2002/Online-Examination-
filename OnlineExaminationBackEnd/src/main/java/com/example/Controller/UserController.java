@@ -190,7 +190,7 @@ public class UserController {
 		}		
 	}
 
-	
+	//changing user activation status with id
 	@GetMapping("/activate/{id}")
 	public ResponseEntity<?> toggleUserActivation(@PathVariable int id){
 		Users user=userServices.getUserById(id);
@@ -198,7 +198,7 @@ public class UserController {
 		userServices.saveUser(user);
 		return ResponseEntity.status(HttpStatus.OK).body(user);
 	}
-	
+	//changing multiple user activation status
 	@PostMapping("/activeMultipleUser")
 	public ResponseEntity<?> activateMultipleUser(@RequestBody List<Users> users){
 		try {
@@ -213,6 +213,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body("Selected user activated successfully");
 	}
 	
+	//changing multiple user activation status
 	@PostMapping("/deactiveMultipleUser")
 	public ResponseEntity<?> deActivateMultipleUser(@RequestBody List<Users> users){
 		try {

@@ -49,6 +49,7 @@ public class QuestionController {
 	@Autowired
 	private CategoryServices categoryService;
 	
+	//fetching all Mcq Question
 	@GetMapping
 	public ResponseEntity<?> getAllQuestions() {
 		List<Question> question=questionService.getAllQuestion();
@@ -58,7 +59,7 @@ public class QuestionController {
 			return ResponseEntity.status(HttpStatus.OK).body(question);
 		}
 	}
-	
+	//fetching  Mcq Question with id
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getQuestionsById(@PathVariable int id) {
 		Question question=questionService.getQuestionById(id);
@@ -69,24 +70,30 @@ public class QuestionController {
 		}
 	}
 	
+	
+	//saving Mcq Question
 	@PostMapping
-	public ResponseEntity<?> saveCatgory(@RequestBody QuestionDto questions){
+	public ResponseEntity<?> saveMcqQuetion(@RequestBody QuestionDto questions){
+		//Validating Mcq Question
 		String error=validateQuestionData(questions);
 		if(error!="") {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 		}
 		try {
+			//creating new Mcq Question
 			Question newQuestion=new Question();
 			newQuestion.setDifficulty(Difficulty.valueOf(questions.getDificulty()));
 			newQuestion.setText(questions.getText());
 			newQuestion.setCatagory(categoryService.getCategoryById(questions.getCategoryId()));
 			Question savedQuestion=questionService.saveQuestion(newQuestion);
 			
+			//creating Question Realated Options
 			try {
 				if(questions.getOption1()!="") {
 					MCQOption option=new MCQOption();
 					option.setText(questions.getOption1());
 					option.setQuestion(savedQuestion);
+					//checking this option is right ans or not
 					if(questions.getOption1().equals(questions.getAnswer())) {
 						option.setCorrect(true);
 					}
@@ -96,6 +103,7 @@ public class QuestionController {
 					MCQOption option=new MCQOption();
 					option.setText(questions.getOption2());
 					option.setQuestion(savedQuestion);
+					//checking this option is right ans or not
 					if(questions.getOption2().equals(questions.getAnswer())) {
 						option.setCorrect(true);
 					}
@@ -105,6 +113,7 @@ public class QuestionController {
 					MCQOption option=new MCQOption();
 					option.setText(questions.getOption3());
 					option.setQuestion(savedQuestion);
+					//checking this option is right ans or not
 					if(questions.getOption3().equals(questions.getAnswer())) {
 						option.setCorrect(true);
 					}
@@ -114,6 +123,7 @@ public class QuestionController {
 					MCQOption option=new MCQOption();
 					option.setText(questions.getOption4());
 					option.setQuestion(savedQuestion);
+					//checking this option is right ans or not
 					if(questions.getOption4 ().equals(questions.getAnswer())) {
 						option.setCorrect(true);
 					}
@@ -129,6 +139,7 @@ public class QuestionController {
 		
 	}
 	
+	//deleting Mcq Question with id 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteQuestion(@PathVariable int id){
 		if(questionService.getQuestionById(id)!=null) {
@@ -143,6 +154,7 @@ public class QuestionController {
 		}
 	}
 	
+	//deleting Multiple Mcq Question
 	@PostMapping("/multiple")
 	public ResponseEntity<?> deleteMultipleQuestion(@RequestBody List<Question> questions){
 		try {
@@ -155,10 +167,11 @@ public class QuestionController {
 		}
 	}
 	
-	
+	//update question controller
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateQuestion(@PathVariable int id,@RequestBody QuestionDto question){
 		Question prevQuestion=questionService.getQuestionById(id);
+		//checking if question text is not null and question should not already exists
 		if(question.getText()==null || question.getText().equals("")) return ResponseEntity.status(HttpStatus.CONFLICT).body("Question Text Required");
 		if(questionService.findByText(question.getText())!=null && !question.getText().equals(prevQuestion.getText())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Question Alredy Exists");
@@ -170,15 +183,14 @@ public class QuestionController {
 			if(categoryService.getCategoryById(question.getCategoryId())==null) return ResponseEntity.status(HttpStatus.CONFLICT).body("Category Not Found");
 			prevQuestion.setCatagory(categoryService.getCategoryById(question.getCategoryId()));
 		}
-		
+		//updating question difficulty if changed
 		if(!(prevQuestion.getDifficulty().equals(question.getDificulty()))){
 			if(!(question.getDificulty().equals("EASY") || question.getDificulty().equals("MEDIUM") || question.getDificulty().equals("HARD"))) return ResponseEntity.status(HttpStatus.CONFLICT).body("Dificulty Must be in(HARD,Medium,EASY)");
 			prevQuestion.setDifficulty(Difficulty.valueOf(question.getDificulty()));
 		}
 		try {
 			try {
-					
-					
+					//handling option change
 					if(!(question.getOption1()!=null && question.getOption2()!=null)) return ResponseEntity.status(HttpStatus.CONFLICT).body("Option 1 & 2 Required");
 					else {
 						boolean isAnwerFind=false;
@@ -190,7 +202,7 @@ public class QuestionController {
 						else if(question.getOption4()!=null) {
 							if(question.getOption4().equals(question.getAnswer())) isAnwerFind=true;
 						}
-						
+						//checking answer match or not
 						if(!isAnwerFind) return ResponseEntity.status(HttpStatus.CONFLICT).body("Anwer Not Match");
 					}
 					List<MCQOption> options=questionService.getAllOptionByQuestionId(questionService.getQuestionById(id));
@@ -263,6 +275,7 @@ public class QuestionController {
 	}
 	
 	
+	//creating multiple mcq through csv file upload
     @PostMapping("/upload-csv")
     public ResponseEntity<?> uploadCsv(@RequestParam("file") MultipartFile file, @RequestParam("categoryId") int categoryId) {
         if (file.isEmpty()) {
@@ -274,13 +287,14 @@ public class QuestionController {
         // Process the file and convert to a list of StudentDto
         List<QuestionDto> questions=null;
 		try {
+			//function for reading csv file and its return QuetionDto obj list
 			questions = processCsvToQuestionDto(file,categoryId);
 		} catch (Exception e) {
 			System.out.println(e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Somthing went wrong while procecing File");
 		}
 		Users newUser=new Users();
-		
+		//creating multiple questions
 		for(QuestionDto que:questions){
 			String message=validateQuestionData(que);
 			if(message!="") {
@@ -347,6 +361,7 @@ public class QuestionController {
         return ResponseEntity.ok("File processed successfully. Number of records: " + questions.size());
     }
 
+    //function that read csv file and convert it to Question dto
     private List<QuestionDto> processCsvToQuestionDto(MultipartFile file,int categoryId) throws Exception {
         List<QuestionDto> questions = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
@@ -392,7 +407,7 @@ public class QuestionController {
     }
     	
 	
-	
+    //validating mcq question
 	public String validateQuestionData(QuestionDto question) {
 		String message="";
 		boolean isAnwerFind=false;

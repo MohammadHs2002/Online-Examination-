@@ -38,22 +38,24 @@ public class AuthController {
 
     
     
-    
+    //controller for login for jwt token its return newly generated token
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
-
+    	//authenticate user for jwt
         this.doAuthenticate(request.getEmail(), request.getPassword());
 
-
+        //generate user details
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+        //generates new token
         String token = this.helper.generateToken(userDetails);
-
+        //dto for response
         JwtResponse response = JwtResponse.builder()
                 .jwtToken(token)
                 .username(userDetails.getUsername()).build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    //function for authenticate use if user was not valid it throws exception
     private void doAuthenticate(String email, String password) {
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
@@ -62,6 +64,7 @@ public class AuthController {
 
 
         } catch (BadCredentialsException e) {
+        	//throwing exeption
             throw new BadCredentialsException(" Invalid Username or Password  !!");
         }
 

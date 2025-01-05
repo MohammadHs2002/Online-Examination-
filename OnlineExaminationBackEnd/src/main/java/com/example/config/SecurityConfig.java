@@ -30,7 +30,7 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
+	//bean providing jwt users add or modify use hear
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails user = User.builder()
@@ -46,17 +46,18 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user, user1);
     }
 
+    //password encoder bean
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    
     @Autowired
     private JwtAuthenticationEntryPoint point;
 
     @Autowired
     private JwtAuthenticationFilter filter;
-
+    //security filter for all api its provide secure api access
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors().and() // Enable CORS
@@ -71,13 +72,13 @@ public class SecurityConfig {
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
+  
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // CORS Configuration
+    // CORS Configuration- for cross origin communication
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

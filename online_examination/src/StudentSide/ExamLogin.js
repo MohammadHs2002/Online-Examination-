@@ -7,18 +7,14 @@ import { useNavigate } from 'react-router-dom';
 
 
 const ExamLogin = () => {
-  //getting importtant objects that nedded
+
+  //getting important objects that nedded
   const { JwtToken, login, endpoint, showError,Examlogin } = useContext(UserContext);
   const form = useForm();
   const { register, control, handleSubmit } = form;
   const [examData,setExamData]=useState([]);
-  const navigate=useNavigate();
-
-  //show  toast message function
-
 
   //function that handlee login and form requierd funcnality
-  //data is geted from form form library use
   const HandleLogin = (data) => {
       const exam=JSON.parse(localStorage.getItem("exam"));
       const allotmentId=exam[0].allotment.allotmentId;
@@ -32,7 +28,6 @@ const ExamLogin = () => {
         }
       })
         .then(res => {
-          //checking resposnse of backend
           if (res.status == 200) {
             showError("Login Succefull", 1000, "success");
             //storing session in localstorage
@@ -47,7 +42,6 @@ const ExamLogin = () => {
             }, 1000);
           }
         })
-        //checking why user was not able to login 
         .catch(error => {
             if(error.status===409){
               showError(error.response.data);

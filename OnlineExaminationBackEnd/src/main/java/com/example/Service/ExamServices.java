@@ -110,10 +110,11 @@ public class ExamServices {
 		return allotments;
 	}
 	
-	
+	//saving question that used in exam 
 	public List<Exam_Questions> saveMappedQuestion(Exam e){
 		List<Exam_Questions> examQuestions=new ArrayList<Exam_Questions>();
 		if(e.getExamType().equals(ExamType.MCQ)) {
+			//saving mcq question
 			List<Question> questions= questionRepo.findByCatagory(e.getMcqCategorie());
 			List<Question> filteredQuestion=questions.stream().filter(que -> que.getDifficulty().equals(e.getExamDifficulty())).collect(Collectors.toList()); 
 			List<Question> selectedQuestions=filteredQuestion.subList(0, e.getNumberOfQuestions());
@@ -124,6 +125,7 @@ public class ExamServices {
 				examQuestions.add(examQuestionRepo.save(newQuestion));
 			}
 		}else {
+			//saving programming question
 			List<ProgramingQuestion> programingQuestion=programingRepo.findByDifficulty(e.getExamDifficulty());
 			Collections.shuffle(programingQuestion);
 			List<ProgramingQuestion> selectedProgramingQuestion=programingQuestion.subList(0, e.getNumberOfQuestions());
@@ -136,7 +138,7 @@ public class ExamServices {
 		}
 		return examQuestions;
 	}
-	
+	//saving exam  allotment answer
 	public List<Exam_Answer> saveExamAnswer(List<Exam_Questions> examQuestion,List<Exam_Allotment> allotments){
 		List<Exam_Answer> examAnswerList=new ArrayList<Exam_Answer>();
 		for(Exam_Allotment a:allotments) {
@@ -150,6 +152,7 @@ public class ExamServices {
 		return examAnswerList;
 	} 
 	
+	//saving allotments result and security log 
 	public void saveAllotment_Results_SecurtyLog(List<Exam_Allotment> allotments) {
 		for(Exam_Allotment a:allotments) {
 			Exam_Result result=new Exam_Result();
@@ -169,7 +172,7 @@ public class ExamServices {
 	public void deleteAllotmentById(Integer id) {
 		allotmentRepo.deleteById(id);
 	}
-	
+	//checking availibility of question for peticular category,difficulty
 	public Integer checkQuestionAvailibility(Exam e) {
 		if(e.getExamType().equals(ExamType.MCQ)) {
 		List<Question> questions= questionRepo.findByCatagory(e.getMcqCategorie());
@@ -181,6 +184,7 @@ public class ExamServices {
 		}
 	}
 	
+	//getting upcoming exams for sheduling during re-start
 	public List<Exam> findUpComingExams(){
 		List<Exam> upcomingExam=new ArrayList<>();
 		for(Exam e:examRepo.findAll()) {
@@ -191,7 +195,7 @@ public class ExamServices {
 		return upcomingExam;
 	}
 	
-	
+	//getting exam for particular student
 	public List<ExamFetchDto> getAllExamsByUser(Users user){
 		Student student=studentRepo.findByUser(user);
 		List<ExamFetchDto> exams=new ArrayList<>();
@@ -205,35 +209,36 @@ public class ExamServices {
 		return exams;
 	}
 	
-	
+	//getting allotment by id
 	public Exam_Allotment getAllotmentById(int id) {
 		return allotmentRepo.findById(id).orElse(null);
 	}
 	
+	//updating security log
 	public Exam_Security_log updateSecurityLog(Exam_Security_log log) {
 		return examSecurityRepo.save(log);
 	}
 	
+	//this function used for updating allotment 
 	public Exam_Allotment updateAllotment(Exam_Allotment allotment) {
 		return allotmentRepo.save(allotment);
 	}
-	
-	
-	public Exam_Answer saveAnswer(int optionId,int answerId) {
+	//this function used for updating mcq answer during exam 
+	public Exam_Answer saveMcqAnswer(int optionId,int answerId) {
 		Exam_Answer answer=examAnswerRepo.findById(answerId).get();
 		answer.setSelectedOptionId(optionId);
 		answer.setIsAnswered(true);
 		return examAnswerRepo.save(answer);
 	}
 	
-	
+	//this function used for updating Programming answer during exam 
 	public Exam_Answer saveProgramingAnswer(String code,int answerId) {
 		Exam_Answer answer=examAnswerRepo.findById(answerId).get();
 		answer.setProgrammingAnswerText(code);
 		answer.setIsAnswered(true);
 		return examAnswerRepo.save(answer);
 	}
-	
+	//this function used for updating Used Time of User during exam 
 	public boolean updateUsedTime(int usedTime,int allotmentId) {
 		try {
 		Exam_Allotment allotment=allotmentRepo.findById(allotmentId).get();
@@ -245,7 +250,7 @@ public class ExamServices {
 		} 
 	}
 	
-	
+//updating security log during exam 
 	public Exam_Security_log updateSecurityLog(String action,int allotmentId) {
 			Exam_Security_log log= examSecurityRepo.findByAllotment(allotmentRepo.findById(allotmentId).get());
 			
@@ -259,6 +264,7 @@ public class ExamServices {
 			return examSecurityRepo.save(log);
 	}
 	
+	//submiting single exam
 	public boolean submitSingleExam(int allotmentId) {
 		try {
 		Exam_Allotment allotment=allotmentRepo.findById(allotmentId).get();
@@ -266,6 +272,7 @@ public class ExamServices {
 		Exam_Result result=calculateResult(allotment);
 		examResultRepo.save(result);
 		}else {
+			//checking student suspicious or not for disquelification
 			if(allotment.getSecurityLog().getIsSuspicious()) {
 				Exam_Result result=allotment.getResults();
 				result.setResultStatus(ResultStatus.Disqualified);
@@ -280,6 +287,7 @@ public class ExamServices {
 		}
 	}
 	
+	//calculating all result of exams 
 	public boolean calculateAllResultsOfExam(Exam e) {
 		try {
 		List<Exam_Allotment> Allallotment=e.getAllotments();

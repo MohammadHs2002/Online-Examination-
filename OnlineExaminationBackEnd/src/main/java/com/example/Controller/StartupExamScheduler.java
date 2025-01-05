@@ -29,6 +29,7 @@ public class StartupExamScheduler {
     
     @Autowired BCryptPasswordEncoder passwordEncoder;
     
+    //this function schedule every future exam when backend re-starts 
     @PostConstruct
     public void scheduleAllExams() {
         System.out.println("StartupExamScheduler initialized");
@@ -44,7 +45,7 @@ public class StartupExamScheduler {
             examSchedulerService.scheduleExam(exam);
         }
     }
-    
+    //this function set super admin if not exists 
     @PostConstruct
     public void setDefaultAdmin() {
     	if(userServices.getUserByUserName("Admin")==null) {
