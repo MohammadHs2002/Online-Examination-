@@ -83,7 +83,7 @@ public class ProgramQuestionController {
 		if(services.getQuestionByTitle(question.getTitle())!=null) return "Question title Alredy Exists";
 		}
 		
-	    if(question.getDifficulty().equals(Difficulty.HARD) || question.getDifficulty().equals(Difficulty.MEDIUM) || question.getDifficulty().equals(Difficulty.EASY)) return "Difficulty Must be In(HARD,MEDIUM,EASY)";
+	    if(!(question.getDifficulty().equals(Difficulty.HARD) || question.getDifficulty().equals(Difficulty.MEDIUM) || question.getDifficulty().equals(Difficulty.EASY))) return "Difficulty Must be In(HARD,MEDIUM,EASY)";
 		return "";
 	}
 	

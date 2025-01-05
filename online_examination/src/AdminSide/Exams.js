@@ -1,7 +1,5 @@
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react'
 import BasicTable from './BasicTable'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { UserContext } from '../UserContext';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
@@ -396,12 +394,34 @@ const Exams = () => {
     };
 
     //student list downloading function
+    const downloadResult = (data) => {
+        // Prepare data for CSV
+        const allotments=data.allotments;
+        const csvData = allotments.map((a) => ({
+            AllotmentID: a.allotmentId,
+            UniqueID: a.studentId.unique_id,
+            StudentName: a.studentId.name,
+            Marks: a.results.rightQuestions,
+            TotalMarks: data.totalMarks,
+            passOrFailed: a.results.resultStatus
+        }));
+
+        // Convert JSON to CSV
+        const csv = Papa.unparse(csvData);
+
+        // Download the file
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        saveAs(blob, "result.csv");
+    };
+
+
+    //student list downloading function
     const downloadStudentList = (allotments) => {
         // Prepare data for CSV
         const csvData = allotments.map((a) => ({
             AllotmentID: a.allotmentId,
-            StudentName: a.studentId.name,
             UniqueID: a.studentId.unique_id,
+            StudentName: a.studentId.name,
             Program: a.studentId.program,
             Semester: a.studentId.semester,
             Division: a.studentId.division,
@@ -863,8 +883,11 @@ const Exams = () => {
                                             <button className="btn btn-success me-2" onClick={() => downloadStudentList(viewExamData.allotments)}>
                                                 <i className="bi bi-download" /> Student List
                                             </button>
-                                            <button className="btn btn-info" onClick={() => downloadQuestionList(viewExamData.questions)}>
+                                            <button className="btn btn-info me-2" onClick={() => downloadQuestionList(viewExamData.questions)}>
                                                 <i className="bi bi-download" /> Question List
+                                            </button>
+                                            <button className="btn btn-warning me-2" onClick={() => downloadResult(viewExamData)}  disabled={!viewExamData.resultDeclared}>
+                                                <i className="bi bi-download" /> Result
                                             </button>
                                         </div>
                                     </div>

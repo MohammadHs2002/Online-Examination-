@@ -324,7 +324,6 @@ const Questions = () => {
 
   //create multiple Question Creation
   const HandleMultipleQuestionSubmit = async () => {
-    try{
     if (questionFile !== undefined && multipleQuestionCategoryId !== "") {
 
       const formData = new FormData();
@@ -340,17 +339,18 @@ const Questions = () => {
           if (res.status === 200) {
             setMultipleQuestionCategoryId("");
             setCreateMultipleQuestionModel(false);
-            showError("Multiple Student Uploded SuccessFulyy", 1000, "success");
+            showError("Multiple Mcq Question Uploded SuccessFulyy", 1000, "success");
             questionFile();
             LoadData();
+            return;
           }
         })
         .catch((error) => {
           console.log(error);
           setMultipleQuestionCategoryId("");
           setCreateMultipleQuestionModel(false);
-          setMultipleQuestionError(error.response?.data.error);
-          const insertedRecord = error.response.data.recordInserted;
+          setMultipleQuestionError(error.response?.data?.error);
+          const insertedRecord = error.response?.data?.recordInserted;
           if (insertedRecord !== 0) {
             showError(" " + insertedRecord + " Student Record Inserted Succefulyy", 1000, "success");
           }
@@ -359,9 +359,6 @@ const Questions = () => {
     } else {
       showError("Plese Provide File And Select Group")
     }
-  }catch(e){
-    showError("Somthing went wrong while csv file upload");
-  }
   }
   // Loading MCqQuestion Tabel Data
   const LoadData = async () => {
@@ -836,7 +833,7 @@ const Questions = () => {
                   <div className="row g-2">
                     <div className="col-md-6 position-relative">
                       <label htmlFor="File" className="form-label">
-                        Select File
+                        Select File read this-
                         <span
                           ref={tooltipRef}
                           className="ms-2 text-primary"
@@ -980,7 +977,7 @@ const Questions = () => {
                       ))}
                     </ul>
                   ) : (
-                    <p>No errors found.</p>
+                    <p>No Error Found.</p>
                   )}
                   <button
                     onClick={copyToClipboard}

@@ -36,6 +36,7 @@ public class Exam_Answer {
     @ManyToOne
     private Exam_Questions question;
 
+    @Column(columnDefinition = "varchar(MAX)")
     private String programmingAnswerText;
     private Integer selectedOptionId;
     private Boolean isAnswered=false;
