@@ -42,7 +42,7 @@ const ProgramingQuestion = () => {
     const [filterData, setFilterData] = useState([]);
 
 
-    // MCQ Question Tabel Columns
+    // Programing Question Tabel Columns
     const questionColumn = useMemo(() => [
         {
             Header: 'ID',
@@ -118,7 +118,7 @@ const ProgramingQuestion = () => {
     ], []);
 
     //Create , update , delete Functions
-    //new Mcq Question Creation
+    //new Programing Question Creation
     const HandleNewQuestionCreation = async (data) => {
         await axios.post(
             `${endpoint}/api/programQuestion`, data,
@@ -161,7 +161,7 @@ const ProgramingQuestion = () => {
             setUpdateQuestionModel(true);
         })
             .catch(error => {
-                showError("Somthing went wrong while Updating User");
+                showError("Somthing went wrong while Updating Question");
                 if (error.status === 401) {
                     generateJwt();
                 }
@@ -185,7 +185,7 @@ const ProgramingQuestion = () => {
             if (error.status === 409) {
                 showError(error.response.data);
             } else {
-                showError("Somthing went wrong while Updating Student");
+                showError("Somthing went wrong while Updating Question");
             }
             if (error.status === 401) {
                 generateJwt();

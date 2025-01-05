@@ -225,7 +225,7 @@ const Questions = () => {
       .catch(error => {
         if (error.status === 409) {
           showError("Category name Alredy Exists");
-        } else showError("Somthing went Wrong Durring Adding Group");
+        } else showError("Somthing went Wrong Durring Adding Category");
       })
   }
 
@@ -238,6 +238,7 @@ const Questions = () => {
     }).then(res => {
       const question = res.data;
       let ans = "";
+      //finding correct answer in in options
       if (question.options[0].correct) ans = question.options[0].text;
       else if (question.options[1].correct) ans = question.options[1].text;
       else if (question.options[2]?.correct) ans = question.options[2].text;
@@ -256,7 +257,7 @@ const Questions = () => {
       setUpdateQuestionModel(true);
     })
       .catch(error => {
-        showError("Somthing went wrong while Updating User");
+        showError("Somthing went wrong while Updating Question");
         if (error.status === 401) {
           generateJwt();
         }
@@ -280,7 +281,7 @@ const Questions = () => {
       if (error.status === 409) {
         showError(error.response.data);
       } else {
-        showError("Somthing went wrong while Updating Student");
+        showError("Somthing went wrong while Updating Quetions");
       }
       if (error.status === 401) {
         generateJwt();
@@ -323,11 +324,9 @@ const Questions = () => {
 
   //create multiple Question Creation
   const HandleMultipleQuestionSubmit = async () => {
+    try{
     if (questionFile !== undefined && multipleQuestionCategoryId !== "") {
 
-
-      console.log(questionFile);
-      console.log(multipleQuestionCategoryId);
       const formData = new FormData();
       formData.append("file", questionFile);
       formData.append("categoryId", multipleQuestionCategoryId);
@@ -360,6 +359,9 @@ const Questions = () => {
     } else {
       showError("Plese Provide File And Select Group")
     }
+  }catch(e){
+    showError("Somthing went wrong while csv file upload");
+  }
   }
   // Loading MCqQuestion Tabel Data
   const LoadData = async () => {
@@ -969,9 +971,9 @@ const Questions = () => {
                   </button>
                 </div>
                 <div className="modal-body" style={{ paddingTop: '10px' }}>
-                  {multipleQuestionError.split(';').length > 0 ? (
+                  {multipleQuestionError?.split(';').length > 0 ? (
                     <ul style={{ listStyleType: 'none', paddingLeft: '0' }}>
-                      {multipleQuestionError.split(';').map((error, index) => (
+                      {multipleQuestionError?.split(';').map((error, index) => (
                         <li key={index} style={{ marginBottom: '5px' }}>
                           {error.trim()}
                         </li>

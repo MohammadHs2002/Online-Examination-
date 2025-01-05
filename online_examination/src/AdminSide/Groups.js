@@ -157,7 +157,7 @@ const Groups = () => {
                 console.log(error);
                 showError(error.response.data);
             } else {
-                showError("Somthing went wrong while Updating Student");
+                showError("Somthing went wrong while Updating Group");
             }
             if (error.status === 401) {
                 generateJwt();
@@ -209,7 +209,7 @@ const Groups = () => {
                     }, 3000);
                 })
                 .catch(error => {
-                    toast("Somthing went wrong While Deleting Multiple User");
+                    toast("Somthing went wrong While Deleting Multiple Groups");
                 })
         }
     }

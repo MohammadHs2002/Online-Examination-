@@ -110,7 +110,7 @@ const QuestionCategory = () => {
             .catch(error => {
                 if (error.status === 409) {
                     showError("Group name Alredy Exists");
-                } else showError("Somthing went Wrong Durring Adding Group");
+                } else showError("Somthing went Wrong Durring Adding Category");
             })
     }
 
@@ -129,7 +129,7 @@ const QuestionCategory = () => {
             setUpdateModel(true);
         })
             .catch(error => {
-                showError("Somthing went wrong while Updating Group");
+                showError("Somthing went wrong while Updating Category");
                 if (error.status === 401) {
                     generateJwt();
                 }
@@ -154,7 +154,7 @@ const QuestionCategory = () => {
                 console.log(error);
                 showError(error.response.data);
             } else {
-                showError("Somthing went wrong while Updating Student");
+                showError("Somthing went wrong while Updating Question");
             }
             if (error.status === 401) {
                 generateJwt();
@@ -206,7 +206,7 @@ const QuestionCategory = () => {
                     }, 3000);
                 })
                 .catch(error => {
-                    toast("Somthing went wrong While Deleting Multiple User");
+                    toast("Somthing went wrong While Deleting Multiple Quetions");
                 })
         }
     }

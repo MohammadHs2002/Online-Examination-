@@ -239,7 +239,7 @@ public class ExamController {
 		}
 	}
 	//this controller delete multiple exams
-	@DeleteMapping("/multiple")
+	@PostMapping("/multiple")
 	public ResponseEntity<?> DeleteMultipleExams(@RequestBody List<Exam> exams){
 		try {
 			for(Exam e:exams) {
@@ -252,7 +252,7 @@ public class ExamController {
 	}
 	
 	//this will delete multiple allotments
-	@DeleteMapping("/allotments/multiple")
+	@PostMapping("/allotments/multiple")
 	public ResponseEntity<?> DeleteMultipleAllotments(@RequestBody List<Exam_Allotment> allotments){
 		try {
 			for(Exam_Allotment e:allotments) {
@@ -278,6 +278,7 @@ public class ExamController {
 		if(e.getExamType()==null)return "Exam Type Required";
 		
 		//checking if prvided data is valid of on eg.student group existing,ExamType valid;
+		if(examServices.getExamByName(e.getExamName())!=null)return "Exam Name Alredy Exists";
 		if(groupServices.getGroupById(e.getStudentGroup().getId())==null)return "student group id not found";
 		if(!(e.getExamType().equals(ExamType.MCQ) || e.getExamType().equals(ExamType.PROGRAMMING)))return "Exam Type Must be in (MCQ,PROGRAMMING)";
 		if(e.getNumberOfQuestions()==null || e.getNumberOfQuestions()==0) return "Exams Number Of Question Required";

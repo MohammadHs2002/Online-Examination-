@@ -7,5 +7,5 @@ import com.example.Entity.Exam;
 
 @Repository
 public interface ExamRepo extends JpaRepository<Exam, Integer>{
-	
+	Exam findByExamName(String examName);
 }

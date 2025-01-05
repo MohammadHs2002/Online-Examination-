@@ -197,7 +197,7 @@ const Student = () => {
             setUpdateStudentModel(true);
         })
             .catch(error => {
-                showError("Somthing went wrong while Updating User");
+                showError("Somthing went wrong while Updating Student");
                 if (error.status === 401) {
                     generateJwt();
                 }
@@ -262,7 +262,7 @@ const Student = () => {
             })
             .catch(error => {
                 console.log(error);
-                toast("Somthing went wrong While Deleting Multiple User");
+                toast("Somthing went wrong While Deleting Multiple Students");
             })
     }
 
@@ -854,7 +854,7 @@ const Student = () => {
                                     <div className="row g-2">
                                         <div className="col-md-6 position-relative">
                                             <label htmlFor="File" className="form-label">
-                                                Select File
+                                                Select File read this-
                                                 <span
                                                     ref={tooltipRef}
                                                     className="ms-2 text-primary"

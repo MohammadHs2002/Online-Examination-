@@ -26,7 +26,7 @@ const StudentDashboard = () => {
     if (window.confirm("Are You Sure Want To Logout ?")) {
       axios.post(`${endpoint}/api/log/logout`, user, {
         headers: {
-          "Authorization": `Bearer ${JwtToken}`
+          "Authorization": `Bearer ${localStorage.getItem("JwtToken")}`
         }
       })
       logout();

@@ -1,6 +1,7 @@
 package com.example.Entity;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,14 +10,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.example.Entity.Question.Difficulty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Getter
@@ -59,5 +64,9 @@ public class ProgramingQuestion {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    @OneToMany(mappedBy = "programQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Exam_Questions>  question = new ArrayList<>();
 
 }

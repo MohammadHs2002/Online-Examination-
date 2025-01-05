@@ -180,7 +180,7 @@ const Allotments = () => {
         if (error.status === 404) {
           setData([]);
           setFilterData([]);
-          showError("No Exam Found");
+          showError("No Allotment Found");
         } else showError("Somthing wrong while loading Question")
       })
   }

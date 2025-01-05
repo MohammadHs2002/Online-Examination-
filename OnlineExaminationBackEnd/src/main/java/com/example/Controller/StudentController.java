@@ -71,7 +71,7 @@ public class StudentController {
 	
 	//create new student
 	@PostMapping
-	public ResponseEntity<?> createGroup(@RequestBody StudentDto student) {
+	public ResponseEntity<?> createStudent(@RequestBody StudentDto student) {
 		System.out.print(student);
 	    // Validate mandatory fields
 	    if (student.getUsername() == null || student.getUsername().isEmpty() ||
@@ -109,7 +109,7 @@ public class StudentController {
 	        // Create and save user
 	        Users user = new Users();
 	        user.setUsername(student.getUsername());
-	        user.setPassword(student.getPassword());
+	        user.setPassword(bCryptPasswordEncoder.encode(student.getPassword()));
 	        user.setRole("Student");
 	        Users newUser = userService.saveUser(user);
 
@@ -286,11 +286,10 @@ public class StudentController {
                 // Generate username and password based on unique_id and mobile_no (last 7 digits)
                 String username = uniqueId;
                 String password = number.toString().substring( number.toString().length()- 7);
-
                 // Create and populate the StudentDto object
                 StudentDto student = new StudentDto();
                 student.setUsername(username);
-                student.setPassword(password);
+                student.setPassword(bCryptPasswordEncoder.encode(password));
                 student.setName(name);
                 student.setUnique_id(uniqueId);
                 student.setProgram(program);

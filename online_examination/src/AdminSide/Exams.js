@@ -192,7 +192,7 @@ const Exams = () => {
         })
             .catch(error => {
                 console.log(error)
-                showError("Somthing went wrong while Updating User");
+                showError("Somthing went wrong while Updating Exam");
                 if (error.status === 401) {
                     generateJwt();
                 }
@@ -280,7 +280,7 @@ const Exams = () => {
                 }, 1000);
             })
             .catch(error => {
-                toast("Somthing went wrong While Deleting Multiple Question");
+                toast("Somthing went wrong While Deleting Multiple Exam");
             })
     }
 
@@ -361,7 +361,7 @@ const Exams = () => {
         setCurrentDateTime(`${year}-${month}-${day}T${hours}:${minutes}`);
     }, []);
 
-    //Extra funcction
+    //Extra function
     //question downloading function
     const downloadQuestionList = (questions) => {
         let csvData = null;

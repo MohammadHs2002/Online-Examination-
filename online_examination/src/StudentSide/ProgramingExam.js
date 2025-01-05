@@ -88,7 +88,7 @@ const ProgramingExam = () => {
       }
     } else {
       if (examData != null) updateUsedTime(examData.exam.examDuration);
-      closeExam();
+      if(examData!=null)closeExam();
     }
     return () => clearInterval(timerInterval);
   }, [timer]);
@@ -217,6 +217,15 @@ const ProgramingExam = () => {
       })
   }
 
+//enter in full screen
+  const enterFullScreen = () => {
+    try{
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) elem.requestFullscreen();
+    }catch(e){
+      console.log(e);
+    }
+  };
 
   //preventing copy pasting during exam
   const preventCopyPasting = (e) => {
@@ -303,6 +312,7 @@ const ProgramingExam = () => {
     };
   }, [allotmentId]);
 
+  useEffect(()=> {enterFullScreen()},[]);
 
   return (
     <div onCopy={preventCopyPasting}
@@ -350,7 +360,7 @@ const ProgramingExam = () => {
                 {answers.map((_, index) => (
                   <button
                     key={index}
-                    className={`btn m-1 ${index === currentQuestionIndex ? 'btn-info' : answers[index]?.selectedOptionId ? 'btn-success' : 'btn-secondary'}`}
+                    className={`btn m-1 ${index === currentQuestionIndex ? 'btn-info' : answers[index]?.isAnswered ? 'btn-success' : 'btn-secondary'}`}
                     onClick={() => setCurrentQuestionIndex(index)}
                     style={{
                       flex: '1 0 40px', // Buttons shrink and grow as needed; default width is 40px

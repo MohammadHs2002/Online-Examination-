@@ -1,11 +1,13 @@
 package com.example.Entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -62,5 +64,9 @@ public class Question {
 	public enum Difficulty{
 		HARD,MEDIUM,EASY
 	}
+	
+	@OneToMany(mappedBy = "mcqQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Exam_Questions>  question = new ArrayList<>();
 
 }

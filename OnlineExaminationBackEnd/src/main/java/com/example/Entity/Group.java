@@ -48,4 +48,8 @@ public class Group {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    @OneToMany(mappedBy = "studentGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Exam>  exams = new ArrayList<>();
 }

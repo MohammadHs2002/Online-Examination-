@@ -86,6 +86,10 @@ public class ExamServices {
 		return dto;
 	}
 	
+	public Exam getExamByName(String name) {
+			return examRepo.findByExamName(name);
+	}
+	
 	public void deleteAllotments(Exam_Allotment allotment) {
 		 allotmentRepo.deleteById(allotment.getAllotmentId());
 	}
@@ -278,8 +282,8 @@ public class ExamServices {
 				result.setResultStatus(ResultStatus.Disqualified);
 				examResultRepo.save(result);
 			}
-			allotment.setIsSubmited(true);
 		}
+		allotment.setIsSubmited(true);
 		allotmentRepo.save(allotment);
 		return true;
 		}catch (Exception e) {

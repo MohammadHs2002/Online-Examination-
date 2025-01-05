@@ -81,7 +81,7 @@ const McqExam = () => {
     }
   }else{
     if(examData!=null) updateUsedTime(examData.exam.examDuration);
-    closeExam();
+    if(examData!=null)closeExam();
   }
     return () => clearInterval(timerInterval);
   }, [timer]);
@@ -108,14 +108,15 @@ const McqExam = () => {
   }
 
 //close exam function for closing exam and redirecting student
-  const closeExam=()=>{
+  const closeExam=(e)=>{
+      console.log(e);
         axios.get(`${endpoint}/api/exam/submitExam/${allotmentId}`,{
           headers:{
             "Authorization":`Bearer ${localStorage.getItem('JwtToken')}`
           }
         }).then(res=>{
           localStorage.removeItem('exam');
-          window.location.href = "http://localhost:3000/student";
+          navigate("/student")
           Examlogout();
         })
         .catch(error=>{
@@ -190,10 +191,15 @@ const McqExam = () => {
   const preventCopyPasting = (e) => {
     e.preventDefault();
   };
-  // const enterFullScreen = () => {
-  //   const elem = document.documentElement;
-  //   if (elem.requestFullscreen) elem.requestFullscreen();
-  // };
+
+  const enterFullScreen = () => {
+    try{
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) elem.requestFullscreen();
+    }catch(e){
+      console.log(e);
+    }
+  };
 
   useEffect(() => {
     const handleViolation = () => {
@@ -244,6 +250,8 @@ const McqExam = () => {
     };
   }, [allotmentId]);
 
+   useEffect(()=> {enterFullScreen()},[]);
+   
   return (
     <div onCopy={preventCopyPasting}
     onCut={preventCopyPasting}
